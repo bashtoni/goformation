@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"strings"
 
 	"github.com/imdario/mergo"
 	yamlwrapper "github.com/sanathkr/yaml"
@@ -311,4 +312,20 @@ func handler(name string, options *ProcessorOptions) (IntrinsicHandler, bool) {
 
 	return nil, false
 
+}
+
+// generateARN generates an ARN for a resource, to be used with GetAtt.Arn
+func generateARN(accountID, region, cfnType, name string) string {
+	splitCFNType := strings.Split(cfnType, "::")
+	if len(splitCFNType) != 3 {
+		return fmt.Sprintf("arn:aws:::%s:%s", accountID, name)
+	}
+	switch cfnType {
+	case "AWS::IAM::ManagedPolicy":
+		return fmt.Sprintf("arn:aws:iam::%s:policy/%s", accountID, name)
+	case "AWS::IAM::Role":
+		return fmt.Sprintf("arn:aws:iam::%s:role/%s", accountID, name)
+	default:
+		return fmt.Sprintf("aws:aws:%s:%s:%s:%s", strings.ToLower(splitCFNType[1]), region, accountID, name)
+	}
 }
