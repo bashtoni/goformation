@@ -1,5 +1,7 @@
 package intrinsics
 
+import "fmt"
+
 // Ref resolves the 'Ref' AWS CloudFormation intrinsic function.
 // Currently, this only resolves against CloudFormation Parameter default values
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/intrinsic-function-reference-ref.html
@@ -48,11 +50,53 @@ func Ref(name string, input interface{}, template interface{}) interface{} {
 						}
 					}
 				}
+
+				// Return the name based on the resource type
+				resource := getResource(name, template)
+				if resource == nil {
+					return nil
+				}
+				return RefForResource(name, resource, template)
 			}
 		}
-
 	}
 
 	return nil
 
+}
+
+func RefForResource(name string, resource map[string]interface{}, template interface{}) string {
+	cfnType := resourceType(name, resource)
+	if uproperties, ok := resource["Properties"]; ok {
+		if properties, ok := uproperties.(map[string]interface{}); ok {
+			switch cfnType {
+			case "AWS::IAM::Role":
+				if tRoleName, ok := properties["RoleName"].(string); ok {
+					return tRoleName
+				}
+				// The resource could itself contain a ref..
+				if roleRef, ok := properties["RoleName"].([]string); ok {
+					if realRoleName, ok := Ref(roleRef[0], roleRef[1], template).(string); ok {
+						return realRoleName
+					}
+				}
+				// Ref might appear like this
+				if uroleRef, ok := properties["RoleName"].(map[string]interface{}); ok {
+					if refTo, ok := uroleRef["Ref"]; ok {
+						if realRoleName, ok := Ref("Ref", refTo, template).(string); ok {
+							return realRoleName
+						}
+					}
+				}
+				return name
+			case "AWS::IAM::ManagedPolicy":
+				polName := name
+				if tPolName, ok := properties["ManagedPolicyName"].(string); ok {
+					polName = tPolName
+				}
+				return fmt.Sprintf("arn:aws:iam::123456789012:policy/%s", polName)
+			}
+		}
+	}
+	return name
 }

@@ -118,7 +118,7 @@ func (r *Stage) UnmarshalJSON(b []byte) error {
 	res := &struct {
 		Type                string
 		Properties          *Properties
-		DependsOn           []string
+		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
 		UpdateReplacePolicy string
@@ -137,9 +137,13 @@ func (r *Stage) UnmarshalJSON(b []byte) error {
 	if res.Properties != nil {
 		*r = Stage(*res.Properties)
 	}
-	if res.DependsOn != nil {
-		r.AWSCloudFormationDependsOn = res.DependsOn
+	if dependsOn, ok := res.DependsOn.(string); ok {
+		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
+	if dependsOn, ok := res.DependsOn.([]string); ok {
+		r.AWSCloudFormationDependsOn = dependsOn
+	}
+
 	if res.Metadata != nil {
 		r.AWSCloudFormationMetadata = res.Metadata
 	}

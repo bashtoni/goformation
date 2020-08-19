@@ -73344,7 +73344,10 @@ var SamSchema = `{
                     "type": "string"
                 },
                 "MaxLength": {
-                    "type": "string"
+                    "type": [
+                        "string",
+                        "integer"
+                    ]
                 },
                 "MaxValue": {
                     "type": "string"

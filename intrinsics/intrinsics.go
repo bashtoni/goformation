@@ -26,7 +26,7 @@ var defaultIntrinsicHandlers = map[string]IntrinsicHandler{
 	"Fn::Not":         FnNot,
 	"Fn::Or":          FnOr,
 	"Fn::FindInMap":   FnFindInMap,
-	"Fn::GetAtt":      nonResolvingHandler,
+	"Fn::GetAtt":      FnGetAtt,
 	"Fn::GetAZs":      FnGetAZs,
 	"Fn::ImportValue": nonResolvingHandler,
 	"Fn::Join":        FnJoin,
@@ -314,18 +314,51 @@ func handler(name string, options *ProcessorOptions) (IntrinsicHandler, bool) {
 
 }
 
-// generateARN generates an ARN for a resource, to be used with GetAtt.Arn
-func generateARN(accountID, region, cfnType, name string) string {
-	splitCFNType := strings.Split(cfnType, "::")
-	if len(splitCFNType) != 3 {
-		return fmt.Sprintf("arn:aws:::%s:%s", accountID, name)
+func getResource(name string, template interface{}) map[string]interface{} {
+	if t, ok := template.(map[string]interface{}); ok {
+		// Check there is a resources section
+		if uresources, ok := t["Resources"]; ok {
+			// Check the resources section is a map
+			if resources, ok := uresources.(map[string]interface{}); ok {
+				// Check there is a resource with the name we're looking for
+				if uresource, ok := resources[name]; ok {
+					// Check the resource is a map
+					if resource, ok := uresource.(map[string]interface{}); ok {
+						return resource
+					}
+				}
+			}
+		}
 	}
+	return nil
+}
+
+func resourceType(name string, resource map[string]interface{}) string {
+	// Check the resource has a type
+	if uresourceType, ok := resource["Type"]; ok {
+		if cfnType, ok := uresourceType.(string); ok {
+			return cfnType
+		}
+	}
+	return ""
+}
+
+// generateARN generates an ARN for a resource, to be used with GetAtt.Arn
+func generateARN(accountID, region, name string, template interface{}) string {
+	resource := getResource(name, template)
+	if len(resource) == 0 {
+		return ""
+	}
+	ref := RefForResource(name, resource, template)
+	if ref == "" {
+		return ""
+	}
+	cfnType := resourceType(name, resource)
+	splitCFNType := strings.Split(cfnType, "::")
 	switch cfnType {
-	case "AWS::IAM::ManagedPolicy":
-		return fmt.Sprintf("arn:aws:iam::%s:policy/%s", accountID, name)
 	case "AWS::IAM::Role":
-		return fmt.Sprintf("arn:aws:iam::%s:role/%s", accountID, name)
+		return fmt.Sprintf("arn:aws:iam::%s:role/%s", accountID, ref)
 	default:
-		return fmt.Sprintf("aws:aws:%s:%s:%s:%s", strings.ToLower(splitCFNType[1]), region, accountID, name)
+		return fmt.Sprintf("aws:aws:%s:%s:%s:%s", strings.ToLower(splitCFNType[1]), region, accountID, ref)
 	}
 }
