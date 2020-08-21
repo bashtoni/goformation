@@ -1,8 +1,6 @@
 package dms
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Endpoint_ElasticsearchSettings AWS CloudFormation Resource (AWS::DMS::Endpoint.ElasticsearchSettings)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dms-endpoint-elasticsearchsettings.html

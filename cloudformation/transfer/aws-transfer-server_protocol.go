@@ -1,8 +1,6 @@
 package transfer
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Server_Protocol AWS CloudFormation Resource (AWS::Transfer::Server.Protocol)
 // See:

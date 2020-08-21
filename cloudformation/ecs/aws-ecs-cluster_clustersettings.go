@@ -1,8 +1,6 @@
 package ecs
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Cluster_ClusterSettings AWS CloudFormation Resource (AWS::ECS::Cluster.ClusterSettings)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-cluster-clustersettings.html

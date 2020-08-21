@@ -1,8 +1,6 @@
 package dynamodb
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Table_KeySchema AWS CloudFormation Resource (AWS::DynamoDB::Table.KeySchema)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dynamodb-keyschema.html

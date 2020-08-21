@@ -1,8 +1,6 @@
 package emr
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // InstanceGroupConfig_CloudWatchAlarmDefinition AWS CloudFormation Resource (AWS::EMR::InstanceGroupConfig.CloudWatchAlarmDefinition)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticmapreduce-instancegroupconfig-cloudwatchalarmdefinition.html

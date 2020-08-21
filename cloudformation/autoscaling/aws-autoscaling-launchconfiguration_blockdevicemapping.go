@@ -1,8 +1,6 @@
 package autoscaling
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // LaunchConfiguration_BlockDeviceMapping AWS CloudFormation Resource (AWS::AutoScaling::LaunchConfiguration.BlockDeviceMapping)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-as-launchconfig-blockdev-mapping.html

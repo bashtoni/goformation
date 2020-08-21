@@ -1,8 +1,6 @@
 package iotanalytics
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Dataset_S3DestinationConfiguration AWS CloudFormation Resource (AWS::IoTAnalytics::Dataset.S3DestinationConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-s3destinationconfiguration.html

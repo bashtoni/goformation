@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Authorizer AWS CloudFormation Resource (AWS::ApiGateway::Authorizer)
@@ -84,7 +85,7 @@ func (r *Authorizer) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Authorizer) MarshalJSON() ([]byte, error) {
 	type Properties Authorizer
 	return json.Marshal(&struct {
@@ -109,10 +110,22 @@ func (r Authorizer) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Authorizer) UnmarshalJSON(b []byte) error {
-	type Properties Authorizer
+	type P Authorizer
+	props := &Authorizer{}
+	newProps := &struct {
+		*P
+		AuthType                     types.StringIsh `json:"AuthType,omitempty"`
+		AuthorizerCredentials        types.StringIsh `json:"AuthorizerCredentials,omitempty"`
+		AuthorizerUri                types.StringIsh `json:"AuthorizerUri,omitempty"`
+		IdentitySource               types.StringIsh `json:"IdentitySource,omitempty"`
+		IdentityValidationExpression types.StringIsh `json:"IdentityValidationExpression,omitempty"`
+		Name                         types.StringIsh `json:"Name,omitempty"`
+		RestApiId                    types.StringIsh `json:"RestApiId,omitempty"`
+		Type                         types.StringIsh `json:"Type,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -123,20 +136,41 @@ func (r *Authorizer) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Authorizer(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AuthType = string(newProps.AuthType)
+		props.AuthorizerCredentials = string(newProps.AuthorizerCredentials)
+		props.AuthorizerUri = string(newProps.AuthorizerUri)
+		props.IdentitySource = string(newProps.IdentitySource)
+		props.IdentityValidationExpression = string(newProps.IdentityValidationExpression)
+		props.Name = string(newProps.Name)
+		props.RestApiId = string(newProps.RestApiId)
+		props.Type = string(newProps.Type)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

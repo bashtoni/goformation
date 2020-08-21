@@ -1,8 +1,6 @@
 package config
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // RemediationConfiguration_ResourceValue AWS CloudFormation Resource (AWS::Config::RemediationConfiguration.ResourceValue)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-config-remediationconfiguration-resourcevalue.html

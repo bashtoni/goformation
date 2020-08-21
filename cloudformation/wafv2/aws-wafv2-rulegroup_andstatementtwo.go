@@ -1,8 +1,6 @@
 package wafv2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // RuleGroup_AndStatementTwo AWS CloudFormation Resource (AWS::WAFv2::RuleGroup.AndStatementTwo)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-rulegroup-andstatementtwo.html

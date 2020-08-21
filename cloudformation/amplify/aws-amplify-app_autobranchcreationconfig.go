@@ -1,8 +1,6 @@
 package amplify
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // App_AutoBranchCreationConfig AWS CloudFormation Resource (AWS::Amplify::App.AutoBranchCreationConfig)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-app-autobranchcreationconfig.html

@@ -1,8 +1,6 @@
 package dlm
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // LifecyclePolicy_CreateRule AWS CloudFormation Resource (AWS::DLM::LifecyclePolicy.CreateRule)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-createrule.html

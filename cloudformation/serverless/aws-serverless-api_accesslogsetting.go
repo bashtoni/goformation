@@ -1,8 +1,6 @@
 package serverless
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Api_AccessLogSetting AWS CloudFormation Resource (AWS::Serverless::Api.AccessLogSetting)
 // See: https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigateway-stage-accesslogsetting.html

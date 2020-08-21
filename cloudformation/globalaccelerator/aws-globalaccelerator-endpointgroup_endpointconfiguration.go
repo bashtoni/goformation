@@ -1,8 +1,6 @@
 package globalaccelerator
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // EndpointGroup_EndpointConfiguration AWS CloudFormation Resource (AWS::GlobalAccelerator::EndpointGroup.EndpointConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-globalaccelerator-endpointgroup-endpointconfiguration.html

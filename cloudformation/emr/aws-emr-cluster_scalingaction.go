@@ -1,8 +1,6 @@
 package emr
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Cluster_ScalingAction AWS CloudFormation Resource (AWS::EMR::Cluster.ScalingAction)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticmapreduce-cluster-scalingaction.html

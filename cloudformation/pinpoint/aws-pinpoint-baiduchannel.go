@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // BaiduChannel AWS CloudFormation Resource (AWS::Pinpoint::BaiduChannel)
@@ -54,7 +55,7 @@ func (r *BaiduChannel) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r BaiduChannel) MarshalJSON() ([]byte, error) {
 	type Properties BaiduChannel
 	return json.Marshal(&struct {
@@ -79,10 +80,17 @@ func (r BaiduChannel) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *BaiduChannel) UnmarshalJSON(b []byte) error {
-	type Properties BaiduChannel
+	type P BaiduChannel
+	props := &BaiduChannel{}
+	newProps := &struct {
+		*P
+		ApiKey        types.StringIsh `json:"ApiKey,omitempty"`
+		ApplicationId types.StringIsh `json:"ApplicationId,omitempty"`
+		SecretKey     types.StringIsh `json:"SecretKey,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -93,20 +101,36 @@ func (r *BaiduChannel) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = BaiduChannel(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ApiKey = string(newProps.ApiKey)
+		props.ApplicationId = string(newProps.ApplicationId)
+		props.SecretKey = string(newProps.SecretKey)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

@@ -1,8 +1,6 @@
 package serverless
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // StateMachine_EventSource AWS CloudFormation Resource (AWS::Serverless::StateMachine.EventSource)
 // See: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#event-source-object

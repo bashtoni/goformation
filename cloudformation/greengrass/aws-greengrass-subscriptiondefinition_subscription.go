@@ -1,8 +1,6 @@
 package greengrass
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // SubscriptionDefinition_Subscription AWS CloudFormation Resource (AWS::Greengrass::SubscriptionDefinition.Subscription)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrass-subscriptiondefinition-subscription.html

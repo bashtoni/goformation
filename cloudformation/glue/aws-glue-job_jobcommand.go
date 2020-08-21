@@ -1,8 +1,6 @@
 package glue
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Job_JobCommand AWS CloudFormation Resource (AWS::Glue::Job.JobCommand)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-job-jobcommand.html

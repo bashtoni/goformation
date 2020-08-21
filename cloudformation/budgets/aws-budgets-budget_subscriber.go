@@ -1,8 +1,6 @@
 package budgets
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Budget_Subscriber AWS CloudFormation Resource (AWS::Budgets::Budget.Subscriber)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-subscriber.html

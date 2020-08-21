@@ -1,8 +1,6 @@
 package appstream
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Stack_StorageConnector AWS CloudFormation Resource (AWS::AppStream::Stack.StorageConnector)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-stack-storageconnector.html

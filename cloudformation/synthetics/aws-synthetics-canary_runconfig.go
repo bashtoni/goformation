@@ -1,8 +1,6 @@
 package synthetics
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Canary_RunConfig AWS CloudFormation Resource (AWS::Synthetics::Canary.RunConfig)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-synthetics-canary-runconfig.html

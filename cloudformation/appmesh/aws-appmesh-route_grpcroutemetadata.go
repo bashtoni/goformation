@@ -1,8 +1,6 @@
 package appmesh
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Route_GrpcRouteMetadata AWS CloudFormation Resource (AWS::AppMesh::Route.GrpcRouteMetadata)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-route-grpcroutemetadata.html

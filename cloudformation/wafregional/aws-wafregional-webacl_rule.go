@@ -1,8 +1,6 @@
 package wafregional
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // WebACL_Rule AWS CloudFormation Resource (AWS::WAFRegional::WebACL.Rule)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-webacl-rule.html

@@ -1,8 +1,6 @@
 package pinpointemail
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Identity_MailFromAttributes AWS CloudFormation Resource (AWS::PinpointEmail::Identity.MailFromAttributes)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-identity-mailfromattributes.html

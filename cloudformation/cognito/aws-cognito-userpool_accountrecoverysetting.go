@@ -1,8 +1,6 @@
 package cognito
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // UserPool_AccountRecoverySetting AWS CloudFormation Resource (AWS::Cognito::UserPool.AccountRecoverySetting)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpool-accountrecoverysetting.html

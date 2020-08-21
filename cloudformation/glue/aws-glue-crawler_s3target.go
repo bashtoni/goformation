@@ -1,8 +1,6 @@
 package glue
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Crawler_S3Target AWS CloudFormation Resource (AWS::Glue::Crawler.S3Target)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-glue-crawler-s3target.html

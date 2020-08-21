@@ -1,8 +1,6 @@
 package efs
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // FileSystem_ElasticFileSystemTag AWS CloudFormation Resource (AWS::EFS::FileSystem.ElasticFileSystemTag)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-efs-filesystem-elasticfilesystemtag.html

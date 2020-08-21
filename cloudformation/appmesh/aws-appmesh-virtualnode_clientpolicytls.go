@@ -1,8 +1,6 @@
 package appmesh
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // VirtualNode_ClientPolicyTls AWS CloudFormation Resource (AWS::AppMesh::VirtualNode.ClientPolicyTls)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-virtualnode-clientpolicytls.html

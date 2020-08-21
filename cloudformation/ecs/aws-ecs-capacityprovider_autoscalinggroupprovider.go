@@ -1,8 +1,6 @@
 package ecs
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // CapacityProvider_AutoScalingGroupProvider AWS CloudFormation Resource (AWS::ECS::CapacityProvider.AutoScalingGroupProvider)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-capacityprovider-autoscalinggroupprovider.html

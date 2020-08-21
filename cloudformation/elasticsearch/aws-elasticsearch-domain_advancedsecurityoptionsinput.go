@@ -1,8 +1,6 @@
 package elasticsearch
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Domain_AdvancedSecurityOptionsInput AWS CloudFormation Resource (AWS::Elasticsearch::Domain.AdvancedSecurityOptionsInput)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticsearch-domain-advancedsecurityoptionsinput.html

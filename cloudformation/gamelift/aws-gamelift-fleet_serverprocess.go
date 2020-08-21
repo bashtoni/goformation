@@ -1,8 +1,6 @@
 package gamelift
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Fleet_ServerProcess AWS CloudFormation Resource (AWS::GameLift::Fleet.ServerProcess)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-gamelift-fleet-serverprocess.html

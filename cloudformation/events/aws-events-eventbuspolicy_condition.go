@@ -1,8 +1,6 @@
 package events
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // EventBusPolicy_Condition AWS CloudFormation Resource (AWS::Events::EventBusPolicy.Condition)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-events-eventbuspolicy-condition.html

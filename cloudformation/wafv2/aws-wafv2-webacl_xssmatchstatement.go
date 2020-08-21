@@ -1,8 +1,6 @@
 package wafv2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // WebACL_XssMatchStatement AWS CloudFormation Resource (AWS::WAFv2::WebACL.XssMatchStatement)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-xssmatchstatement.html

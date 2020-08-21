@@ -1,8 +1,6 @@
 package msk
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Cluster_EncryptionAtRest AWS CloudFormation Resource (AWS::MSK::Cluster.EncryptionAtRest)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-msk-cluster-encryptionatrest.html

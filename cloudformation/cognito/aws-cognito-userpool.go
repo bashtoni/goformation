@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // UserPool AWS CloudFormation Resource (AWS::Cognito::UserPool)
@@ -144,7 +145,7 @@ func (r *UserPool) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r UserPool) MarshalJSON() ([]byte, error) {
 	type Properties UserPool
 	return json.Marshal(&struct {
@@ -169,10 +170,20 @@ func (r UserPool) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *UserPool) UnmarshalJSON(b []byte) error {
-	type Properties UserPool
+	type P UserPool
+	props := &UserPool{}
+	newProps := &struct {
+		*P
+		EmailVerificationMessage types.StringIsh `json:"EmailVerificationMessage,omitempty"`
+		EmailVerificationSubject types.StringIsh `json:"EmailVerificationSubject,omitempty"`
+		MfaConfiguration         types.StringIsh `json:"MfaConfiguration,omitempty"`
+		SmsAuthenticationMessage types.StringIsh `json:"SmsAuthenticationMessage,omitempty"`
+		SmsVerificationMessage   types.StringIsh `json:"SmsVerificationMessage,omitempty"`
+		UserPoolName             types.StringIsh `json:"UserPoolName,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -183,20 +194,39 @@ func (r *UserPool) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = UserPool(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.EmailVerificationMessage = string(newProps.EmailVerificationMessage)
+		props.EmailVerificationSubject = string(newProps.EmailVerificationSubject)
+		props.MfaConfiguration = string(newProps.MfaConfiguration)
+		props.SmsAuthenticationMessage = string(newProps.SmsAuthenticationMessage)
+		props.SmsVerificationMessage = string(newProps.SmsVerificationMessage)
+		props.UserPoolName = string(newProps.UserPoolName)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

@@ -1,8 +1,6 @@
 package serverless
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Function_DeploymentPreference AWS CloudFormation Resource (AWS::Serverless::Function.DeploymentPreference)
 // See: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#deploymentpreference-object

@@ -1,8 +1,6 @@
 package mediaconvert
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // JobTemplate_HopDestination AWS CloudFormation Resource (AWS::MediaConvert::JobTemplate.HopDestination)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediaconvert-jobtemplate-hopdestination.html

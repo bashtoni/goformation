@@ -1,8 +1,6 @@
 package apigatewayv2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Stage_AccessLogSettings AWS CloudFormation Resource (AWS::ApiGatewayV2::Stage.AccessLogSettings)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-stage-accesslogsettings.html

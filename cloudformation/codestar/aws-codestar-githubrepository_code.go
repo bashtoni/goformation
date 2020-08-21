@@ -1,8 +1,6 @@
 package codestar
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // GitHubRepository_Code AWS CloudFormation Resource (AWS::CodeStar::GitHubRepository.Code)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codestar-githubrepository-code.html

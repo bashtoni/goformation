@@ -1,8 +1,6 @@
 package greengrass
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Group_GroupVersion AWS CloudFormation Resource (AWS::Greengrass::Group.GroupVersion)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrass-group-groupversion.html

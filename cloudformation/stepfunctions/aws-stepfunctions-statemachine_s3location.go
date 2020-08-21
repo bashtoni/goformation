@@ -1,8 +1,6 @@
 package stepfunctions
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // StateMachine_S3Location AWS CloudFormation Resource (AWS::StepFunctions::StateMachine.S3Location)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-stepfunctions-statemachine-s3location.html

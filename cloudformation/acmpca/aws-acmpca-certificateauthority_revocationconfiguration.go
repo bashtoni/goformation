@@ -1,8 +1,6 @@
 package acmpca
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // CertificateAuthority_RevocationConfiguration AWS CloudFormation Resource (AWS::ACMPCA::CertificateAuthority.RevocationConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificateauthority-revocationconfiguration.html

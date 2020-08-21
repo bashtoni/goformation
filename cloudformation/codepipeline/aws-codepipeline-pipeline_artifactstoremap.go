@@ -1,8 +1,6 @@
 package codepipeline
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Pipeline_ArtifactStoreMap AWS CloudFormation Resource (AWS::CodePipeline::Pipeline.ArtifactStoreMap)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codepipeline-pipeline-artifactstoremap.html

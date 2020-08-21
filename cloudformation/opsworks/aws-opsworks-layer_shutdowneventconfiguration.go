@@ -1,8 +1,6 @@
 package opsworks
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Layer_ShutdownEventConfiguration AWS CloudFormation Resource (AWS::OpsWorks::Layer.ShutdownEventConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-opsworks-layer-lifecycleeventconfiguration-shutdowneventconfiguration.html

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Api AWS CloudFormation Resource (AWS::ApiGatewayV2::Api)
@@ -114,7 +115,7 @@ func (r *Api) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Api) MarshalJSON() ([]byte, error) {
 	type Properties Api
 	return json.Marshal(&struct {
@@ -139,10 +140,24 @@ func (r Api) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Api) UnmarshalJSON(b []byte) error {
-	type Properties Api
+	type P Api
+	props := &Api{}
+	newProps := &struct {
+		*P
+		ApiKeySelectionExpression types.StringIsh `json:"ApiKeySelectionExpression,omitempty"`
+		BasePath                  types.StringIsh `json:"BasePath,omitempty"`
+		CredentialsArn            types.StringIsh `json:"CredentialsArn,omitempty"`
+		Description               types.StringIsh `json:"Description,omitempty"`
+		Name                      types.StringIsh `json:"Name,omitempty"`
+		ProtocolType              types.StringIsh `json:"ProtocolType,omitempty"`
+		RouteKey                  types.StringIsh `json:"RouteKey,omitempty"`
+		RouteSelectionExpression  types.StringIsh `json:"RouteSelectionExpression,omitempty"`
+		Target                    types.StringIsh `json:"Target,omitempty"`
+		Version                   types.StringIsh `json:"Version,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -153,20 +168,43 @@ func (r *Api) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Api(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ApiKeySelectionExpression = string(newProps.ApiKeySelectionExpression)
+		props.BasePath = string(newProps.BasePath)
+		props.CredentialsArn = string(newProps.CredentialsArn)
+		props.Description = string(newProps.Description)
+		props.Name = string(newProps.Name)
+		props.ProtocolType = string(newProps.ProtocolType)
+		props.RouteKey = string(newProps.RouteKey)
+		props.RouteSelectionExpression = string(newProps.RouteSelectionExpression)
+		props.Target = string(newProps.Target)
+		props.Version = string(newProps.Version)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

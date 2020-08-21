@@ -1,8 +1,6 @@
 package iot
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // TopicRule_AssetPropertyVariant AWS CloudFormation Resource (AWS::IoT::TopicRule.AssetPropertyVariant)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-topicrule-assetpropertyvariant.html

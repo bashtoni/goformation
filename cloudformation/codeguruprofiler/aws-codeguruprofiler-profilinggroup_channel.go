@@ -1,8 +1,6 @@
 package codeguruprofiler
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ProfilingGroup_Channel AWS CloudFormation Resource (AWS::CodeGuruProfiler::ProfilingGroup.Channel)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-codeguruprofiler-profilinggroup-channel.html

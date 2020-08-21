@@ -1,8 +1,6 @@
 package pinpoint
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Campaign_Message AWS CloudFormation Resource (AWS::Pinpoint::Campaign.Message)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpoint-campaign-message.html

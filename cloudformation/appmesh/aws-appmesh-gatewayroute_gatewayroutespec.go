@@ -1,8 +1,6 @@
 package appmesh
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // GatewayRoute_GatewayRouteSpec AWS CloudFormation Resource (AWS::AppMesh::GatewayRoute.GatewayRouteSpec)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-gatewayroute-gatewayroutespec.html

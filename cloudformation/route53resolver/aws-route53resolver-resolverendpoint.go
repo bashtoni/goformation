@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // ResolverEndpoint AWS CloudFormation Resource (AWS::Route53Resolver::ResolverEndpoint)
@@ -60,7 +61,7 @@ func (r *ResolverEndpoint) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r ResolverEndpoint) MarshalJSON() ([]byte, error) {
 	type Properties ResolverEndpoint
 	return json.Marshal(&struct {
@@ -85,10 +86,16 @@ func (r ResolverEndpoint) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *ResolverEndpoint) UnmarshalJSON(b []byte) error {
-	type Properties ResolverEndpoint
+	type P ResolverEndpoint
+	props := &ResolverEndpoint{}
+	newProps := &struct {
+		*P
+		Direction types.StringIsh `json:"Direction,omitempty"`
+		Name      types.StringIsh `json:"Name,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -99,20 +106,35 @@ func (r *ResolverEndpoint) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = ResolverEndpoint(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.Direction = string(newProps.Direction)
+		props.Name = string(newProps.Name)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

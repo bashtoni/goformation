@@ -1,8 +1,6 @@
 package config
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ConformancePack_ConformancePackInputParameter AWS CloudFormation Resource (AWS::Config::ConformancePack.ConformancePackInputParameter)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-config-conformancepack-conformancepackinputparameter.html

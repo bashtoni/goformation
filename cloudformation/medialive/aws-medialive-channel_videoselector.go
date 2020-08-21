@@ -1,8 +1,6 @@
 package medialive
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Channel_VideoSelector AWS CloudFormation Resource (AWS::MediaLive::Channel.VideoSelector)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-medialive-channel-videoselector.html

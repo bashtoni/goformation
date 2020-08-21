@@ -1,8 +1,6 @@
 package apigateway
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Stage_MethodSetting AWS CloudFormation Resource (AWS::ApiGateway::Stage.MethodSetting)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apitgateway-stage-methodsetting.html

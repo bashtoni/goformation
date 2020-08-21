@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Cluster AWS CloudFormation Resource (AWS::Redshift::Cluster)
@@ -180,7 +181,7 @@ func (r *Cluster) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Cluster) MarshalJSON() ([]byte, error) {
 	type Properties Cluster
 	return json.Marshal(&struct {
@@ -205,10 +206,32 @@ func (r Cluster) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Cluster) UnmarshalJSON(b []byte) error {
-	type Properties Cluster
+	type P Cluster
+	props := &Cluster{}
+	newProps := &struct {
+		*P
+		AvailabilityZone               types.StringIsh `json:"AvailabilityZone,omitempty"`
+		ClusterIdentifier              types.StringIsh `json:"ClusterIdentifier,omitempty"`
+		ClusterParameterGroupName      types.StringIsh `json:"ClusterParameterGroupName,omitempty"`
+		ClusterSubnetGroupName         types.StringIsh `json:"ClusterSubnetGroupName,omitempty"`
+		ClusterType                    types.StringIsh `json:"ClusterType,omitempty"`
+		ClusterVersion                 types.StringIsh `json:"ClusterVersion,omitempty"`
+		DBName                         types.StringIsh `json:"DBName,omitempty"`
+		ElasticIp                      types.StringIsh `json:"ElasticIp,omitempty"`
+		HsmClientCertificateIdentifier types.StringIsh `json:"HsmClientCertificateIdentifier,omitempty"`
+		HsmConfigurationIdentifier     types.StringIsh `json:"HsmConfigurationIdentifier,omitempty"`
+		KmsKeyId                       types.StringIsh `json:"KmsKeyId,omitempty"`
+		MasterUserPassword             types.StringIsh `json:"MasterUserPassword,omitempty"`
+		MasterUsername                 types.StringIsh `json:"MasterUsername,omitempty"`
+		NodeType                       types.StringIsh `json:"NodeType,omitempty"`
+		OwnerAccount                   types.StringIsh `json:"OwnerAccount,omitempty"`
+		PreferredMaintenanceWindow     types.StringIsh `json:"PreferredMaintenanceWindow,omitempty"`
+		SnapshotClusterIdentifier      types.StringIsh `json:"SnapshotClusterIdentifier,omitempty"`
+		SnapshotIdentifier             types.StringIsh `json:"SnapshotIdentifier,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -219,20 +242,51 @@ func (r *Cluster) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Cluster(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AvailabilityZone = string(newProps.AvailabilityZone)
+		props.ClusterIdentifier = string(newProps.ClusterIdentifier)
+		props.ClusterParameterGroupName = string(newProps.ClusterParameterGroupName)
+		props.ClusterSubnetGroupName = string(newProps.ClusterSubnetGroupName)
+		props.ClusterType = string(newProps.ClusterType)
+		props.ClusterVersion = string(newProps.ClusterVersion)
+		props.DBName = string(newProps.DBName)
+		props.ElasticIp = string(newProps.ElasticIp)
+		props.HsmClientCertificateIdentifier = string(newProps.HsmClientCertificateIdentifier)
+		props.HsmConfigurationIdentifier = string(newProps.HsmConfigurationIdentifier)
+		props.KmsKeyId = string(newProps.KmsKeyId)
+		props.MasterUserPassword = string(newProps.MasterUserPassword)
+		props.MasterUsername = string(newProps.MasterUsername)
+		props.NodeType = string(newProps.NodeType)
+		props.OwnerAccount = string(newProps.OwnerAccount)
+		props.PreferredMaintenanceWindow = string(newProps.PreferredMaintenanceWindow)
+		props.SnapshotClusterIdentifier = string(newProps.SnapshotClusterIdentifier)
+		props.SnapshotIdentifier = string(newProps.SnapshotIdentifier)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

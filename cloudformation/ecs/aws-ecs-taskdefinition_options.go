@@ -1,8 +1,6 @@
 package ecs
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // TaskDefinition_Options AWS CloudFormation Resource (AWS::ECS::TaskDefinition.Options)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ecs-taskdefinition-options.html

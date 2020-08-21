@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // EventSubscription AWS CloudFormation Resource (AWS::DMS::EventSubscription)
@@ -70,7 +71,7 @@ func (r *EventSubscription) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r EventSubscription) MarshalJSON() ([]byte, error) {
 	type Properties EventSubscription
 	return json.Marshal(&struct {
@@ -95,10 +96,17 @@ func (r EventSubscription) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *EventSubscription) UnmarshalJSON(b []byte) error {
-	type Properties EventSubscription
+	type P EventSubscription
+	props := &EventSubscription{}
+	newProps := &struct {
+		*P
+		SnsTopicArn      types.StringIsh `json:"SnsTopicArn,omitempty"`
+		SourceType       types.StringIsh `json:"SourceType,omitempty"`
+		SubscriptionName types.StringIsh `json:"SubscriptionName,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -109,20 +117,36 @@ func (r *EventSubscription) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = EventSubscription(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.SnsTopicArn = string(newProps.SnsTopicArn)
+		props.SourceType = string(newProps.SourceType)
+		props.SubscriptionName = string(newProps.SubscriptionName)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

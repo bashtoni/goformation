@@ -1,8 +1,6 @@
 package lakeformation
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Permissions_ColumnWildcard AWS CloudFormation Resource (AWS::LakeFormation::Permissions.ColumnWildcard)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-columnwildcard.html

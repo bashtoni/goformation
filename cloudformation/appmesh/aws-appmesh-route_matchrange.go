@@ -1,8 +1,6 @@
 package appmesh
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Route_MatchRange AWS CloudFormation Resource (AWS::AppMesh::Route.MatchRange)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appmesh-route-matchrange.html

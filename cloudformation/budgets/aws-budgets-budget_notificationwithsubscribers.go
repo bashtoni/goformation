@@ -1,8 +1,6 @@
 package budgets
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Budget_NotificationWithSubscribers AWS CloudFormation Resource (AWS::Budgets::Budget.NotificationWithSubscribers)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-budgets-budget-notificationwithsubscribers.html

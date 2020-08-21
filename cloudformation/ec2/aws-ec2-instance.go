@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Instance AWS CloudFormation Resource (AWS::EC2::Instance)
@@ -223,7 +224,7 @@ func (r *Instance) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Instance) MarshalJSON() ([]byte, error) {
 	type Properties Instance
 	return json.Marshal(&struct {
@@ -252,10 +253,31 @@ func (r Instance) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Instance) UnmarshalJSON(b []byte) error {
-	type Properties Instance
+	type P Instance
+	props := &Instance{}
+	newProps := &struct {
+		*P
+		AdditionalInfo                    types.StringIsh `json:"AdditionalInfo,omitempty"`
+		Affinity                          types.StringIsh `json:"Affinity,omitempty"`
+		AvailabilityZone                  types.StringIsh `json:"AvailabilityZone,omitempty"`
+		HostId                            types.StringIsh `json:"HostId,omitempty"`
+		HostResourceGroupArn              types.StringIsh `json:"HostResourceGroupArn,omitempty"`
+		IamInstanceProfile                types.StringIsh `json:"IamInstanceProfile,omitempty"`
+		ImageId                           types.StringIsh `json:"ImageId,omitempty"`
+		InstanceInitiatedShutdownBehavior types.StringIsh `json:"InstanceInitiatedShutdownBehavior,omitempty"`
+		InstanceType                      types.StringIsh `json:"InstanceType,omitempty"`
+		KernelId                          types.StringIsh `json:"KernelId,omitempty"`
+		KeyName                           types.StringIsh `json:"KeyName,omitempty"`
+		PlacementGroupName                types.StringIsh `json:"PlacementGroupName,omitempty"`
+		PrivateIpAddress                  types.StringIsh `json:"PrivateIpAddress,omitempty"`
+		RamdiskId                         types.StringIsh `json:"RamdiskId,omitempty"`
+		SubnetId                          types.StringIsh `json:"SubnetId,omitempty"`
+		Tenancy                           types.StringIsh `json:"Tenancy,omitempty"`
+		UserData                          types.StringIsh `json:"UserData,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -268,20 +290,50 @@ func (r *Instance) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Instance(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AdditionalInfo = string(newProps.AdditionalInfo)
+		props.Affinity = string(newProps.Affinity)
+		props.AvailabilityZone = string(newProps.AvailabilityZone)
+		props.HostId = string(newProps.HostId)
+		props.HostResourceGroupArn = string(newProps.HostResourceGroupArn)
+		props.IamInstanceProfile = string(newProps.IamInstanceProfile)
+		props.ImageId = string(newProps.ImageId)
+		props.InstanceInitiatedShutdownBehavior = string(newProps.InstanceInitiatedShutdownBehavior)
+		props.InstanceType = string(newProps.InstanceType)
+		props.KernelId = string(newProps.KernelId)
+		props.KeyName = string(newProps.KeyName)
+		props.PlacementGroupName = string(newProps.PlacementGroupName)
+		props.PrivateIpAddress = string(newProps.PrivateIpAddress)
+		props.RamdiskId = string(newProps.RamdiskId)
+		props.SubnetId = string(newProps.SubnetId)
+		props.Tenancy = string(newProps.Tenancy)
+		props.UserData = string(newProps.UserData)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

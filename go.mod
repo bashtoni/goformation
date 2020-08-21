@@ -9,7 +9,7 @@ require (
 	github.com/xeipuuv/gojsonpointer v0.0.0-20190905194746-02993c407bfb // indirect
 	github.com/xeipuuv/gojsonreference v0.0.0-20180127040603-bd5ef7bd5415 // indirect
 	github.com/xeipuuv/gojsonschema v0.0.0-20181112162635-ac52e6811b56
-	golang.org/x/net v0.0.0-20200226121028-0de0cce0169b // indirect
+	golang.org/x/tools v0.0.0-20200820010801-b793a1359eac
 	gopkg.in/yaml.v2 v2.2.8 // indirect
 )
 

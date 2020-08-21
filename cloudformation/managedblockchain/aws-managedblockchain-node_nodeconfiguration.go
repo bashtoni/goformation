@@ -1,8 +1,6 @@
 package managedblockchain
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Node_NodeConfiguration AWS CloudFormation Resource (AWS::ManagedBlockchain::Node.NodeConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-managedblockchain-node-nodeconfiguration.html

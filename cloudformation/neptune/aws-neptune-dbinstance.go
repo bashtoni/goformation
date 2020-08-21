@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // DBInstance AWS CloudFormation Resource (AWS::Neptune::DBInstance)
@@ -90,7 +91,7 @@ func (r *DBInstance) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r DBInstance) MarshalJSON() ([]byte, error) {
 	type Properties DBInstance
 	return json.Marshal(&struct {
@@ -115,10 +116,22 @@ func (r DBInstance) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *DBInstance) UnmarshalJSON(b []byte) error {
-	type Properties DBInstance
+	type P DBInstance
+	props := &DBInstance{}
+	newProps := &struct {
+		*P
+		AvailabilityZone           types.StringIsh `json:"AvailabilityZone,omitempty"`
+		DBClusterIdentifier        types.StringIsh `json:"DBClusterIdentifier,omitempty"`
+		DBInstanceClass            types.StringIsh `json:"DBInstanceClass,omitempty"`
+		DBInstanceIdentifier       types.StringIsh `json:"DBInstanceIdentifier,omitempty"`
+		DBParameterGroupName       types.StringIsh `json:"DBParameterGroupName,omitempty"`
+		DBSnapshotIdentifier       types.StringIsh `json:"DBSnapshotIdentifier,omitempty"`
+		DBSubnetGroupName          types.StringIsh `json:"DBSubnetGroupName,omitempty"`
+		PreferredMaintenanceWindow types.StringIsh `json:"PreferredMaintenanceWindow,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -129,20 +142,41 @@ func (r *DBInstance) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = DBInstance(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AvailabilityZone = string(newProps.AvailabilityZone)
+		props.DBClusterIdentifier = string(newProps.DBClusterIdentifier)
+		props.DBInstanceClass = string(newProps.DBInstanceClass)
+		props.DBInstanceIdentifier = string(newProps.DBInstanceIdentifier)
+		props.DBParameterGroupName = string(newProps.DBParameterGroupName)
+		props.DBSnapshotIdentifier = string(newProps.DBSnapshotIdentifier)
+		props.DBSubnetGroupName = string(newProps.DBSubnetGroupName)
+		props.PreferredMaintenanceWindow = string(newProps.PreferredMaintenanceWindow)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

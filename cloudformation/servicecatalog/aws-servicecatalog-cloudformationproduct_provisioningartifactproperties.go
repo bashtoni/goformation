@@ -1,8 +1,6 @@
 package servicecatalog
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // CloudFormationProduct_ProvisioningArtifactProperties AWS CloudFormation Resource (AWS::ServiceCatalog::CloudFormationProduct.ProvisioningArtifactProperties)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-servicecatalog-cloudformationproduct-provisioningartifactproperties.html

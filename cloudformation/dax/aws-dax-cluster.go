@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Cluster AWS CloudFormation Resource (AWS::DAX::Cluster)
@@ -99,7 +100,7 @@ func (r *Cluster) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Cluster) MarshalJSON() ([]byte, error) {
 	type Properties Cluster
 	return json.Marshal(&struct {
@@ -124,10 +125,22 @@ func (r Cluster) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Cluster) UnmarshalJSON(b []byte) error {
-	type Properties Cluster
+	type P Cluster
+	props := &Cluster{}
+	newProps := &struct {
+		*P
+		ClusterName                types.StringIsh `json:"ClusterName,omitempty"`
+		Description                types.StringIsh `json:"Description,omitempty"`
+		IAMRoleARN                 types.StringIsh `json:"IAMRoleARN,omitempty"`
+		NodeType                   types.StringIsh `json:"NodeType,omitempty"`
+		NotificationTopicARN       types.StringIsh `json:"NotificationTopicARN,omitempty"`
+		ParameterGroupName         types.StringIsh `json:"ParameterGroupName,omitempty"`
+		PreferredMaintenanceWindow types.StringIsh `json:"PreferredMaintenanceWindow,omitempty"`
+		SubnetGroupName            types.StringIsh `json:"SubnetGroupName,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -138,20 +151,41 @@ func (r *Cluster) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Cluster(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ClusterName = string(newProps.ClusterName)
+		props.Description = string(newProps.Description)
+		props.IAMRoleARN = string(newProps.IAMRoleARN)
+		props.NodeType = string(newProps.NodeType)
+		props.NotificationTopicARN = string(newProps.NotificationTopicARN)
+		props.ParameterGroupName = string(newProps.ParameterGroupName)
+		props.PreferredMaintenanceWindow = string(newProps.PreferredMaintenanceWindow)
+		props.SubnetGroupName = string(newProps.SubnetGroupName)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

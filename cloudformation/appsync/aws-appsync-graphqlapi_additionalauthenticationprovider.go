@@ -1,8 +1,6 @@
 package appsync
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // GraphQLApi_AdditionalAuthenticationProvider AWS CloudFormation Resource (AWS::AppSync::GraphQLApi.AdditionalAuthenticationProvider)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appsync-graphqlapi-additionalauthenticationprovider.html

@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Environment AWS CloudFormation Resource (AWS::ElasticBeanstalk::Environment)
@@ -90,7 +91,7 @@ func (r *Environment) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Environment) MarshalJSON() ([]byte, error) {
 	type Properties Environment
 	return json.Marshal(&struct {
@@ -115,10 +116,22 @@ func (r Environment) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Environment) UnmarshalJSON(b []byte) error {
-	type Properties Environment
+	type P Environment
+	props := &Environment{}
+	newProps := &struct {
+		*P
+		ApplicationName   types.StringIsh `json:"ApplicationName,omitempty"`
+		CNAMEPrefix       types.StringIsh `json:"CNAMEPrefix,omitempty"`
+		Description       types.StringIsh `json:"Description,omitempty"`
+		EnvironmentName   types.StringIsh `json:"EnvironmentName,omitempty"`
+		PlatformArn       types.StringIsh `json:"PlatformArn,omitempty"`
+		SolutionStackName types.StringIsh `json:"SolutionStackName,omitempty"`
+		TemplateName      types.StringIsh `json:"TemplateName,omitempty"`
+		VersionLabel      types.StringIsh `json:"VersionLabel,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -129,20 +142,41 @@ func (r *Environment) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Environment(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ApplicationName = string(newProps.ApplicationName)
+		props.CNAMEPrefix = string(newProps.CNAMEPrefix)
+		props.Description = string(newProps.Description)
+		props.EnvironmentName = string(newProps.EnvironmentName)
+		props.PlatformArn = string(newProps.PlatformArn)
+		props.SolutionStackName = string(newProps.SolutionStackName)
+		props.TemplateName = string(newProps.TemplateName)
+		props.VersionLabel = string(newProps.VersionLabel)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

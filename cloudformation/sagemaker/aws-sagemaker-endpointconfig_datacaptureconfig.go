@@ -1,8 +1,6 @@
 package sagemaker
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // EndpointConfig_DataCaptureConfig AWS CloudFormation Resource (AWS::SageMaker::EndpointConfig.DataCaptureConfig)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-endpointconfig-datacaptureconfig.html

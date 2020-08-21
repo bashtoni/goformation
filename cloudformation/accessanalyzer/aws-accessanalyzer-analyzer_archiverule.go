@@ -1,8 +1,6 @@
 package accessanalyzer
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Analyzer_ArchiveRule AWS CloudFormation Resource (AWS::AccessAnalyzer::Analyzer.ArchiveRule)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-accessanalyzer-analyzer-archiverule.html

@@ -1,8 +1,6 @@
 package backup
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // BackupPlan_CopyActionResourceType AWS CloudFormation Resource (AWS::Backup::BackupPlan.CopyActionResourceType)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupplan-copyactionresourcetype.html

@@ -1,8 +1,6 @@
 package autoscaling
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ScalingPolicy_CustomizedMetricSpecification AWS CloudFormation Resource (AWS::AutoScaling::ScalingPolicy.CustomizedMetricSpecification)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscaling-scalingpolicy-customizedmetricspecification.html

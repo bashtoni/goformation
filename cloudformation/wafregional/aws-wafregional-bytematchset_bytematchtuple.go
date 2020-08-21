@@ -1,8 +1,6 @@
 package wafregional
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ByteMatchSet_ByteMatchTuple AWS CloudFormation Resource (AWS::WAFRegional::ByteMatchSet.ByteMatchTuple)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafregional-bytematchset-bytematchtuple.html

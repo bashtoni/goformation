@@ -1,8 +1,6 @@
 package backup
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // BackupVault_NotificationObjectType AWS CloudFormation Resource (AWS::Backup::BackupVault.NotificationObjectType)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-backup-backupvault-notificationobjecttype.html

@@ -1,8 +1,6 @@
 package sagemaker
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // CodeRepository_GitConfig AWS CloudFormation Resource (AWS::SageMaker::CodeRepository.GitConfig)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-coderepository-gitconfig.html

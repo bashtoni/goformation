@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // EnvironmentEC2 AWS CloudFormation Resource (AWS::Cloud9::EnvironmentEC2)
@@ -80,7 +81,7 @@ func (r *EnvironmentEC2) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r EnvironmentEC2) MarshalJSON() ([]byte, error) {
 	type Properties EnvironmentEC2
 	return json.Marshal(&struct {
@@ -105,10 +106,20 @@ func (r EnvironmentEC2) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *EnvironmentEC2) UnmarshalJSON(b []byte) error {
-	type Properties EnvironmentEC2
+	type P EnvironmentEC2
+	props := &EnvironmentEC2{}
+	newProps := &struct {
+		*P
+		ConnectionType types.StringIsh `json:"ConnectionType,omitempty"`
+		Description    types.StringIsh `json:"Description,omitempty"`
+		InstanceType   types.StringIsh `json:"InstanceType,omitempty"`
+		Name           types.StringIsh `json:"Name,omitempty"`
+		OwnerArn       types.StringIsh `json:"OwnerArn,omitempty"`
+		SubnetId       types.StringIsh `json:"SubnetId,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -119,20 +130,39 @@ func (r *EnvironmentEC2) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = EnvironmentEC2(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ConnectionType = string(newProps.ConnectionType)
+		props.Description = string(newProps.Description)
+		props.InstanceType = string(newProps.InstanceType)
+		props.Name = string(newProps.Name)
+		props.OwnerArn = string(newProps.OwnerArn)
+		props.SubnetId = string(newProps.SubnetId)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

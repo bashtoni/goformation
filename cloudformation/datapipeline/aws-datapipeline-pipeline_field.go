@@ -1,8 +1,6 @@
 package datapipeline
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Pipeline_Field AWS CloudFormation Resource (AWS::DataPipeline::Pipeline.Field)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-datapipeline-pipeline-pipelineobjects-fields.html

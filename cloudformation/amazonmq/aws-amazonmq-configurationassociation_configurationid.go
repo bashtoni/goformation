@@ -1,8 +1,6 @@
 package amazonmq
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ConfigurationAssociation_ConfigurationId AWS CloudFormation Resource (AWS::AmazonMQ::ConfigurationAssociation.ConfigurationId)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-configurationassociation-configurationid.html

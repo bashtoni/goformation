@@ -1,8 +1,6 @@
 package sagemaker
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // MonitoringSchedule_ClusterConfig AWS CloudFormation Resource (AWS::SageMaker::MonitoringSchedule.ClusterConfig)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-sagemaker-monitoringschedule-clusterconfig.html

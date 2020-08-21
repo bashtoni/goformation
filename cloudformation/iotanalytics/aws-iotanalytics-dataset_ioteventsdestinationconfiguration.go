@@ -1,8 +1,6 @@
 package iotanalytics
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Dataset_IotEventsDestinationConfiguration AWS CloudFormation Resource (AWS::IoTAnalytics::Dataset.IotEventsDestinationConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-dataset-ioteventsdestinationconfiguration.html

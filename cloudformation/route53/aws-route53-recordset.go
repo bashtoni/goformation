@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // RecordSet AWS CloudFormation Resource (AWS::Route53::RecordSet)
@@ -109,7 +110,7 @@ func (r *RecordSet) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r RecordSet) MarshalJSON() ([]byte, error) {
 	type Properties RecordSet
 	return json.Marshal(&struct {
@@ -134,10 +135,24 @@ func (r RecordSet) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *RecordSet) UnmarshalJSON(b []byte) error {
-	type Properties RecordSet
+	type P RecordSet
+	props := &RecordSet{}
+	newProps := &struct {
+		*P
+		Comment        types.StringIsh `json:"Comment,omitempty"`
+		Failover       types.StringIsh `json:"Failover,omitempty"`
+		HealthCheckId  types.StringIsh `json:"HealthCheckId,omitempty"`
+		HostedZoneId   types.StringIsh `json:"HostedZoneId,omitempty"`
+		HostedZoneName types.StringIsh `json:"HostedZoneName,omitempty"`
+		Name           types.StringIsh `json:"Name,omitempty"`
+		Region         types.StringIsh `json:"Region,omitempty"`
+		SetIdentifier  types.StringIsh `json:"SetIdentifier,omitempty"`
+		TTL            types.StringIsh `json:"TTL,omitempty"`
+		Type           types.StringIsh `json:"Type,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -148,20 +163,43 @@ func (r *RecordSet) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = RecordSet(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.Comment = string(newProps.Comment)
+		props.Failover = string(newProps.Failover)
+		props.HealthCheckId = string(newProps.HealthCheckId)
+		props.HostedZoneId = string(newProps.HostedZoneId)
+		props.HostedZoneName = string(newProps.HostedZoneName)
+		props.Name = string(newProps.Name)
+		props.Region = string(newProps.Region)
+		props.SetIdentifier = string(newProps.SetIdentifier)
+		props.TTL = string(newProps.TTL)
+		props.Type = string(newProps.Type)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

@@ -1,8 +1,6 @@
 package ec2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // SecurityGroup_Egress AWS CloudFormation Resource (AWS::EC2::SecurityGroup.Egress)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-ec2-security-group-rule.html

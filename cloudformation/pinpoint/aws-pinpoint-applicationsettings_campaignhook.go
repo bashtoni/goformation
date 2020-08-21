@@ -1,8 +1,6 @@
 package pinpoint
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ApplicationSettings_CampaignHook AWS CloudFormation Resource (AWS::Pinpoint::ApplicationSettings.CampaignHook)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpoint-applicationsettings-campaignhook.html

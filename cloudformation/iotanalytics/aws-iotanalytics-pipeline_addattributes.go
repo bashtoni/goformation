@@ -1,8 +1,6 @@
 package iotanalytics
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Pipeline_AddAttributes AWS CloudFormation Resource (AWS::IoTAnalytics::Pipeline.AddAttributes)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotanalytics-pipeline-addattributes.html

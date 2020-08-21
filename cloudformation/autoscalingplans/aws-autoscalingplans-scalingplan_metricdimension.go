@@ -1,8 +1,6 @@
 package autoscalingplans
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ScalingPlan_MetricDimension AWS CloudFormation Resource (AWS::AutoScalingPlans::ScalingPlan.MetricDimension)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-metricdimension.html

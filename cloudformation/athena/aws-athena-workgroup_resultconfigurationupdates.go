@@ -1,8 +1,6 @@
 package athena
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // WorkGroup_ResultConfigurationUpdates AWS CloudFormation Resource (AWS::Athena::WorkGroup.ResultConfigurationUpdates)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-athena-workgroup-resultconfigurationupdates.html

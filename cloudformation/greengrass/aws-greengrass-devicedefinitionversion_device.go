@@ -1,8 +1,6 @@
 package greengrass
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // DeviceDefinitionVersion_Device AWS CloudFormation Resource (AWS::Greengrass::DeviceDefinitionVersion.Device)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrass-devicedefinitionversion-device.html

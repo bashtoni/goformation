@@ -1,8 +1,6 @@
 package transfer
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Server_EndpointDetails AWS CloudFormation Resource (AWS::Transfer::Server.EndpointDetails)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-transfer-server-endpointdetails.html

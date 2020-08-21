@@ -2,6 +2,7 @@ package cloudformation
 
 import (
 	"fmt"
+
 	"github.com/awslabs/goformation/v4/cloudformation/accessanalyzer"
 	"github.com/awslabs/goformation/v4/cloudformation/acmpca"
 	"github.com/awslabs/goformation/v4/cloudformation/amazonmq"

@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // GroupVersion AWS CloudFormation Resource (AWS::Greengrass::GroupVersion)
@@ -74,7 +75,7 @@ func (r *GroupVersion) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r GroupVersion) MarshalJSON() ([]byte, error) {
 	type Properties GroupVersion
 	return json.Marshal(&struct {
@@ -99,10 +100,22 @@ func (r GroupVersion) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *GroupVersion) UnmarshalJSON(b []byte) error {
-	type Properties GroupVersion
+	type P GroupVersion
+	props := &GroupVersion{}
+	newProps := &struct {
+		*P
+		ConnectorDefinitionVersionArn    types.StringIsh `json:"ConnectorDefinitionVersionArn,omitempty"`
+		CoreDefinitionVersionArn         types.StringIsh `json:"CoreDefinitionVersionArn,omitempty"`
+		DeviceDefinitionVersionArn       types.StringIsh `json:"DeviceDefinitionVersionArn,omitempty"`
+		FunctionDefinitionVersionArn     types.StringIsh `json:"FunctionDefinitionVersionArn,omitempty"`
+		GroupId                          types.StringIsh `json:"GroupId,omitempty"`
+		LoggerDefinitionVersionArn       types.StringIsh `json:"LoggerDefinitionVersionArn,omitempty"`
+		ResourceDefinitionVersionArn     types.StringIsh `json:"ResourceDefinitionVersionArn,omitempty"`
+		SubscriptionDefinitionVersionArn types.StringIsh `json:"SubscriptionDefinitionVersionArn,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -113,20 +126,41 @@ func (r *GroupVersion) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = GroupVersion(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ConnectorDefinitionVersionArn = string(newProps.ConnectorDefinitionVersionArn)
+		props.CoreDefinitionVersionArn = string(newProps.CoreDefinitionVersionArn)
+		props.DeviceDefinitionVersionArn = string(newProps.DeviceDefinitionVersionArn)
+		props.FunctionDefinitionVersionArn = string(newProps.FunctionDefinitionVersionArn)
+		props.GroupId = string(newProps.GroupId)
+		props.LoggerDefinitionVersionArn = string(newProps.LoggerDefinitionVersionArn)
+		props.ResourceDefinitionVersionArn = string(newProps.ResourceDefinitionVersionArn)
+		props.SubscriptionDefinitionVersionArn = string(newProps.SubscriptionDefinitionVersionArn)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

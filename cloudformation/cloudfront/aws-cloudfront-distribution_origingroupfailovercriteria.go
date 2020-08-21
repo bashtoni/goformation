@@ -1,8 +1,6 @@
 package cloudfront
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Distribution_OriginGroupFailoverCriteria AWS CloudFormation Resource (AWS::CloudFront::Distribution.OriginGroupFailoverCriteria)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudfront-distribution-origingroupfailovercriteria.html

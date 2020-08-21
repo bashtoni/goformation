@@ -1,8 +1,6 @@
 package autoscalingplans
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ScalingPlan_TargetTrackingConfiguration AWS CloudFormation Resource (AWS::AutoScalingPlans::ScalingPlan.TargetTrackingConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-autoscalingplans-scalingplan-targettrackingconfiguration.html

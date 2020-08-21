@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // DBCluster AWS CloudFormation Resource (AWS::RDS::DBCluster)
@@ -190,7 +191,7 @@ func (r *DBCluster) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r DBCluster) MarshalJSON() ([]byte, error) {
 	type Properties DBCluster
 	return json.Marshal(&struct {
@@ -215,10 +216,31 @@ func (r DBCluster) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *DBCluster) UnmarshalJSON(b []byte) error {
-	type Properties DBCluster
+	type P DBCluster
+	props := &DBCluster{}
+	newProps := &struct {
+		*P
+		DBClusterIdentifier         types.StringIsh `json:"DBClusterIdentifier,omitempty"`
+		DBClusterParameterGroupName types.StringIsh `json:"DBClusterParameterGroupName,omitempty"`
+		DBSubnetGroupName           types.StringIsh `json:"DBSubnetGroupName,omitempty"`
+		DatabaseName                types.StringIsh `json:"DatabaseName,omitempty"`
+		Engine                      types.StringIsh `json:"Engine,omitempty"`
+		EngineMode                  types.StringIsh `json:"EngineMode,omitempty"`
+		EngineVersion               types.StringIsh `json:"EngineVersion,omitempty"`
+		KmsKeyId                    types.StringIsh `json:"KmsKeyId,omitempty"`
+		MasterUserPassword          types.StringIsh `json:"MasterUserPassword,omitempty"`
+		MasterUsername              types.StringIsh `json:"MasterUsername,omitempty"`
+		PreferredBackupWindow       types.StringIsh `json:"PreferredBackupWindow,omitempty"`
+		PreferredMaintenanceWindow  types.StringIsh `json:"PreferredMaintenanceWindow,omitempty"`
+		ReplicationSourceIdentifier types.StringIsh `json:"ReplicationSourceIdentifier,omitempty"`
+		RestoreType                 types.StringIsh `json:"RestoreType,omitempty"`
+		SnapshotIdentifier          types.StringIsh `json:"SnapshotIdentifier,omitempty"`
+		SourceDBClusterIdentifier   types.StringIsh `json:"SourceDBClusterIdentifier,omitempty"`
+		SourceRegion                types.StringIsh `json:"SourceRegion,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -229,20 +251,50 @@ func (r *DBCluster) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = DBCluster(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.DBClusterIdentifier = string(newProps.DBClusterIdentifier)
+		props.DBClusterParameterGroupName = string(newProps.DBClusterParameterGroupName)
+		props.DBSubnetGroupName = string(newProps.DBSubnetGroupName)
+		props.DatabaseName = string(newProps.DatabaseName)
+		props.Engine = string(newProps.Engine)
+		props.EngineMode = string(newProps.EngineMode)
+		props.EngineVersion = string(newProps.EngineVersion)
+		props.KmsKeyId = string(newProps.KmsKeyId)
+		props.MasterUserPassword = string(newProps.MasterUserPassword)
+		props.MasterUsername = string(newProps.MasterUsername)
+		props.PreferredBackupWindow = string(newProps.PreferredBackupWindow)
+		props.PreferredMaintenanceWindow = string(newProps.PreferredMaintenanceWindow)
+		props.ReplicationSourceIdentifier = string(newProps.ReplicationSourceIdentifier)
+		props.RestoreType = string(newProps.RestoreType)
+		props.SnapshotIdentifier = string(newProps.SnapshotIdentifier)
+		props.SourceDBClusterIdentifier = string(newProps.SourceDBClusterIdentifier)
+		props.SourceRegion = string(newProps.SourceRegion)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

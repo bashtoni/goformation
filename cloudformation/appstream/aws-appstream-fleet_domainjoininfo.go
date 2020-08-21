@@ -1,8 +1,6 @@
 package appstream
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Fleet_DomainJoinInfo AWS CloudFormation Resource (AWS::AppStream::Fleet.DomainJoinInfo)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-appstream-fleet-domainjoininfo.html

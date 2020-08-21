@@ -1,8 +1,6 @@
 package pinpointemail
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ConfigurationSet_SendingOptions AWS CloudFormation Resource (AWS::PinpointEmail::ConfigurationSet.SendingOptions)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-pinpointemail-configurationset-sendingoptions.html

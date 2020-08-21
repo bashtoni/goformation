@@ -1,8 +1,6 @@
 package elasticloadbalancingv2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ListenerRule_QueryStringKeyValue AWS CloudFormation Resource (AWS::ElasticLoadBalancingV2::ListenerRule.QueryStringKeyValue)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-elasticloadbalancingv2-listenerrule-querystringkeyvalue.html

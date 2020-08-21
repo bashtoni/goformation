@@ -1,8 +1,6 @@
 package mediastore
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Container_CorsRule AWS CloudFormation Resource (AWS::MediaStore::Container.CorsRule)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-mediastore-container-corsrule.html

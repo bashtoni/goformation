@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"go/format"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -12,6 +11,8 @@ import (
 	"sort"
 	"strings"
 	"text/template"
+
+	"golang.org/x/tools/imports"
 )
 
 // ResourceGenerator takes AWS CloudFormation Resource Specification
@@ -236,7 +237,7 @@ func (rg *ResourceGenerator) generateAllResourcesMap(resources []GeneratedResour
 	}
 
 	// Format the generated Go code with gofmt
-	formatted, err := format.Source(buf.Bytes())
+	formatted, err := imports.Process("cloudformation/all.go", buf.Bytes(), &imports.Options{AllErrors: true, Comments: true, TabIndent: true, TabWidth: 8})
 	if err != nil {
 		return fmt.Errorf("failed to format Go file for iterable map of all resources: %s", err)
 	}
@@ -276,17 +277,6 @@ func (rg *ResourceGenerator) generateResources(name string, resource Resource, i
 		}
 	}
 
-	// Check if this resource has any tag properties
-	// note: the property might not always be called 'Tags'
-	// see: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-dlm-lifecyclepolicy-schedule.html#cfn-dlm-lifecyclepolicy-schedule-tagstoadd
-	hasTags := false
-	for _, property := range resource.Properties {
-		if property.ItemType == "Tag" {
-			hasTags = true
-			break
-		}
-	}
-
 	// Pass in the following information into the template
 	sname, err := structName(name)
 	if err != nil {
@@ -312,7 +302,6 @@ func (rg *ResourceGenerator) generateResources(name string, resource Resource, i
 		Version           string
 		HasUpdatePolicy   bool
 		HasCreationPolicy bool
-		HasTags           bool
 	}{
 		Name:              name,
 		PackageName:       pname,
@@ -323,7 +312,6 @@ func (rg *ResourceGenerator) generateResources(name string, resource Resource, i
 		Version:           spec.ResourceSpecificationVersion,
 		HasUpdatePolicy:   hasUpdatePolicy,
 		HasCreationPolicy: hasCreationPolicy,
-		HasTags:           hasTags,
 	}
 
 	// Execute the template, writing it to a buffer
@@ -333,16 +321,17 @@ func (rg *ResourceGenerator) generateResources(name string, resource Resource, i
 		return fmt.Errorf("failed to generate resource %s: %s", name, err)
 	}
 
+	dir := "cloudformation/" + pname
+	fn := dir + "/" + filename(name)
+
 	// Format the generated Go code with gofmt
-	formatted, err := format.Source(buf.Bytes())
+	formatted, err := imports.Process(fn, buf.Bytes(), &imports.Options{AllErrors: true, Comments: true, TabIndent: true, TabWidth: 8})
 	if err != nil {
 		fmt.Println(string(buf.Bytes()))
 		return fmt.Errorf("failed to format Go file for resource %s: %s", name, err)
 	}
 
 	// Check if the file has changed since the last time generate ran
-	dir := "cloudformation/" + pname
-	fn := dir + "/" + filename(name)
 	current, err := ioutil.ReadFile(fn)
 
 	if err != nil || bytes.Compare(formatted, current) != 0 {
@@ -469,17 +458,17 @@ func generatePolymorphicProperty(typename string, name string, property Property
 		os.Exit(1)
 	}
 
-	// Format the generated Go file with gofmt
-	formatted, err := format.Source(buf.Bytes())
-	if err != nil {
-		fmt.Printf("Error: Failed to format Go file for resource %s\n%s\n", name, err)
-		os.Exit(1)
-	}
-
 	// Ensure the package directory exists
 	dir := "cloudformation/" + packageName
 	if _, err := os.Stat(dir); os.IsNotExist(err) {
 		os.Mkdir(dir, 0755)
+	}
+
+	// Format the generated Go file with gofmt
+	formatted, err := imports.Process(dir+"/"+filename(name), buf.Bytes(), &imports.Options{AllErrors: true, Comments: true, TabIndent: true, TabWidth: 8})
+	if err != nil {
+		fmt.Printf("Error: Failed to format Go file for resource %s\n%s\n", name, err)
+		os.Exit(1)
 	}
 
 	// Write the file out

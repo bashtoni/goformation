@@ -1,8 +1,6 @@
 package cognito
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // UserPoolClient_AnalyticsConfiguration AWS CloudFormation Resource (AWS::Cognito::UserPoolClient.AnalyticsConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cognito-userpoolclient-analyticsconfiguration.html

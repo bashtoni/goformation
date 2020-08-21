@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // AutoScalingGroup AWS CloudFormation Resource (AWS::AutoScaling::AutoScalingGroup)
@@ -160,7 +161,7 @@ func (r *AutoScalingGroup) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r AutoScalingGroup) MarshalJSON() ([]byte, error) {
 	type Properties AutoScalingGroup
 	return json.Marshal(&struct {
@@ -189,10 +190,24 @@ func (r AutoScalingGroup) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *AutoScalingGroup) UnmarshalJSON(b []byte) error {
-	type Properties AutoScalingGroup
+	type P AutoScalingGroup
+	props := &AutoScalingGroup{}
+	newProps := &struct {
+		*P
+		AutoScalingGroupName    types.StringIsh `json:"AutoScalingGroupName,omitempty"`
+		Cooldown                types.StringIsh `json:"Cooldown,omitempty"`
+		DesiredCapacity         types.StringIsh `json:"DesiredCapacity,omitempty"`
+		HealthCheckType         types.StringIsh `json:"HealthCheckType,omitempty"`
+		InstanceId              types.StringIsh `json:"InstanceId,omitempty"`
+		LaunchConfigurationName types.StringIsh `json:"LaunchConfigurationName,omitempty"`
+		MaxSize                 types.StringIsh `json:"MaxSize,omitempty"`
+		MinSize                 types.StringIsh `json:"MinSize,omitempty"`
+		PlacementGroup          types.StringIsh `json:"PlacementGroup,omitempty"`
+		ServiceLinkedRoleARN    types.StringIsh `json:"ServiceLinkedRoleARN,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -205,20 +220,43 @@ func (r *AutoScalingGroup) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = AutoScalingGroup(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AutoScalingGroupName = string(newProps.AutoScalingGroupName)
+		props.Cooldown = string(newProps.Cooldown)
+		props.DesiredCapacity = string(newProps.DesiredCapacity)
+		props.HealthCheckType = string(newProps.HealthCheckType)
+		props.InstanceId = string(newProps.InstanceId)
+		props.LaunchConfigurationName = string(newProps.LaunchConfigurationName)
+		props.MaxSize = string(newProps.MaxSize)
+		props.MinSize = string(newProps.MinSize)
+		props.PlacementGroup = string(newProps.PlacementGroup)
+		props.ServiceLinkedRoleARN = string(newProps.ServiceLinkedRoleARN)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

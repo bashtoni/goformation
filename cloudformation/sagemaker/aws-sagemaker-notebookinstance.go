@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // NotebookInstance AWS CloudFormation Resource (AWS::SageMaker::NotebookInstance)
@@ -105,7 +106,7 @@ func (r *NotebookInstance) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r NotebookInstance) MarshalJSON() ([]byte, error) {
 	type Properties NotebookInstance
 	return json.Marshal(&struct {
@@ -130,10 +131,23 @@ func (r NotebookInstance) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *NotebookInstance) UnmarshalJSON(b []byte) error {
-	type Properties NotebookInstance
+	type P NotebookInstance
+	props := &NotebookInstance{}
+	newProps := &struct {
+		*P
+		DefaultCodeRepository types.StringIsh `json:"DefaultCodeRepository,omitempty"`
+		DirectInternetAccess  types.StringIsh `json:"DirectInternetAccess,omitempty"`
+		InstanceType          types.StringIsh `json:"InstanceType,omitempty"`
+		KmsKeyId              types.StringIsh `json:"KmsKeyId,omitempty"`
+		LifecycleConfigName   types.StringIsh `json:"LifecycleConfigName,omitempty"`
+		NotebookInstanceName  types.StringIsh `json:"NotebookInstanceName,omitempty"`
+		RoleArn               types.StringIsh `json:"RoleArn,omitempty"`
+		RootAccess            types.StringIsh `json:"RootAccess,omitempty"`
+		SubnetId              types.StringIsh `json:"SubnetId,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -144,20 +158,42 @@ func (r *NotebookInstance) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = NotebookInstance(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.DefaultCodeRepository = string(newProps.DefaultCodeRepository)
+		props.DirectInternetAccess = string(newProps.DirectInternetAccess)
+		props.InstanceType = string(newProps.InstanceType)
+		props.KmsKeyId = string(newProps.KmsKeyId)
+		props.LifecycleConfigName = string(newProps.LifecycleConfigName)
+		props.NotebookInstanceName = string(newProps.NotebookInstanceName)
+		props.RoleArn = string(newProps.RoleArn)
+		props.RootAccess = string(newProps.RootAccess)
+		props.SubnetId = string(newProps.SubnetId)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

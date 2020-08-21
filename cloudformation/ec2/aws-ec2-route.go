@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Route AWS CloudFormation Resource (AWS::EC2::Route)
@@ -84,7 +85,7 @@ func (r *Route) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Route) MarshalJSON() ([]byte, error) {
 	type Properties Route
 	return json.Marshal(&struct {
@@ -109,10 +110,24 @@ func (r Route) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Route) UnmarshalJSON(b []byte) error {
-	type Properties Route
+	type P Route
+	props := &Route{}
+	newProps := &struct {
+		*P
+		DestinationCidrBlock        types.StringIsh `json:"DestinationCidrBlock,omitempty"`
+		DestinationIpv6CidrBlock    types.StringIsh `json:"DestinationIpv6CidrBlock,omitempty"`
+		EgressOnlyInternetGatewayId types.StringIsh `json:"EgressOnlyInternetGatewayId,omitempty"`
+		GatewayId                   types.StringIsh `json:"GatewayId,omitempty"`
+		InstanceId                  types.StringIsh `json:"InstanceId,omitempty"`
+		NatGatewayId                types.StringIsh `json:"NatGatewayId,omitempty"`
+		NetworkInterfaceId          types.StringIsh `json:"NetworkInterfaceId,omitempty"`
+		RouteTableId                types.StringIsh `json:"RouteTableId,omitempty"`
+		TransitGatewayId            types.StringIsh `json:"TransitGatewayId,omitempty"`
+		VpcPeeringConnectionId      types.StringIsh `json:"VpcPeeringConnectionId,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -123,20 +138,43 @@ func (r *Route) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Route(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.DestinationCidrBlock = string(newProps.DestinationCidrBlock)
+		props.DestinationIpv6CidrBlock = string(newProps.DestinationIpv6CidrBlock)
+		props.EgressOnlyInternetGatewayId = string(newProps.EgressOnlyInternetGatewayId)
+		props.GatewayId = string(newProps.GatewayId)
+		props.InstanceId = string(newProps.InstanceId)
+		props.NatGatewayId = string(newProps.NatGatewayId)
+		props.NetworkInterfaceId = string(newProps.NetworkInterfaceId)
+		props.RouteTableId = string(newProps.RouteTableId)
+		props.TransitGatewayId = string(newProps.TransitGatewayId)
+		props.VpcPeeringConnectionId = string(newProps.VpcPeeringConnectionId)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

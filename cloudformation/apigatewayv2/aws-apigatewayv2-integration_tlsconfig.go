@@ -1,8 +1,6 @@
 package apigatewayv2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Integration_TlsConfig AWS CloudFormation Resource (AWS::ApiGatewayV2::Integration.TlsConfig)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-integration-tlsconfig.html

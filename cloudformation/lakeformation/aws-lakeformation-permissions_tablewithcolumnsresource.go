@@ -1,8 +1,6 @@
 package lakeformation
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Permissions_TableWithColumnsResource AWS CloudFormation Resource (AWS::LakeFormation::Permissions.TableWithColumnsResource)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-lakeformation-permissions-tablewithcolumnsresource.html

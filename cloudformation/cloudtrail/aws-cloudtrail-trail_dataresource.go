@@ -1,8 +1,6 @@
 package cloudtrail
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Trail_DataResource AWS CloudFormation Resource (AWS::CloudTrail::Trail.DataResource)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cloudtrail-trail-dataresource.html

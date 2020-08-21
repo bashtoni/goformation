@@ -1,8 +1,6 @@
 package fsx
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // FileSystem_SelfManagedActiveDirectoryConfiguration AWS CloudFormation Resource (AWS::FSx::FileSystem.SelfManagedActiveDirectoryConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-fsx-filesystem-windowsconfiguration-selfmanagedactivedirectoryconfiguration.html

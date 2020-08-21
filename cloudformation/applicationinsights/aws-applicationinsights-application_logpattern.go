@@ -1,8 +1,6 @@
 package applicationinsights
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Application_LogPattern AWS CloudFormation Resource (AWS::ApplicationInsights::Application.LogPattern)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-logpattern.html

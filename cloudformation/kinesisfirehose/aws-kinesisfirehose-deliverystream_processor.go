@@ -1,8 +1,6 @@
 package kinesisfirehose
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // DeliveryStream_Processor AWS CloudFormation Resource (AWS::KinesisFirehose::DeliveryStream.Processor)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-kinesisfirehose-deliverystream-processor.html

@@ -2,6 +2,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"sort"
@@ -18,6 +19,19 @@ type Resource struct {
 	// Properties are a list of property specifications for the resource. For details, see:
 	// http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-resource-specification-format.html#cfn-resource-specification-format-propertytypes
 	Properties map[string]Property
+}
+
+type StringIsh string
+
+func (s *StringIsh) UnmarshalJson(b []byte) error {
+	var raw interface{}
+	err := json.Unmarshal(b, &raw)
+	if err != nil {
+		return err
+	}
+
+	*s = StringIsh(fmt.Sprintf("%v", raw))
+	return nil
 }
 
 // Schema returns a JSON Schema for the resource (as a string)

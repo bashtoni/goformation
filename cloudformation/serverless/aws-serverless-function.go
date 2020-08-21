@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Function AWS CloudFormation Resource (AWS::Serverless::Function)
@@ -144,7 +145,7 @@ func (r *Function) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Function) MarshalJSON() ([]byte, error) {
 	type Properties Function
 	return json.Marshal(&struct {
@@ -169,10 +170,23 @@ func (r Function) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Function) UnmarshalJSON(b []byte) error {
-	type Properties Function
+	type P Function
+	props := &Function{}
+	newProps := &struct {
+		*P
+		AutoPublishAlias    types.StringIsh `json:"AutoPublishAlias,omitempty"`
+		Description         types.StringIsh `json:"Description,omitempty"`
+		FunctionName        types.StringIsh `json:"FunctionName,omitempty"`
+		Handler             types.StringIsh `json:"Handler,omitempty"`
+		KmsKeyArn           types.StringIsh `json:"KmsKeyArn,omitempty"`
+		PermissionsBoundary types.StringIsh `json:"PermissionsBoundary,omitempty"`
+		Role                types.StringIsh `json:"Role,omitempty"`
+		Runtime             types.StringIsh `json:"Runtime,omitempty"`
+		Tracing             types.StringIsh `json:"Tracing,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -183,20 +197,42 @@ func (r *Function) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Function(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AutoPublishAlias = string(newProps.AutoPublishAlias)
+		props.Description = string(newProps.Description)
+		props.FunctionName = string(newProps.FunctionName)
+		props.Handler = string(newProps.Handler)
+		props.KmsKeyArn = string(newProps.KmsKeyArn)
+		props.PermissionsBoundary = string(newProps.PermissionsBoundary)
+		props.Role = string(newProps.Role)
+		props.Runtime = string(newProps.Runtime)
+		props.Tracing = string(newProps.Tracing)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

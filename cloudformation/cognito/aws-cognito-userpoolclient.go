@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // UserPoolClient AWS CloudFormation Resource (AWS::Cognito::UserPoolClient)
@@ -114,7 +115,7 @@ func (r *UserPoolClient) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r UserPoolClient) MarshalJSON() ([]byte, error) {
 	type Properties UserPoolClient
 	return json.Marshal(&struct {
@@ -139,10 +140,18 @@ func (r UserPoolClient) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *UserPoolClient) UnmarshalJSON(b []byte) error {
-	type Properties UserPoolClient
+	type P UserPoolClient
+	props := &UserPoolClient{}
+	newProps := &struct {
+		*P
+		ClientName                 types.StringIsh `json:"ClientName,omitempty"`
+		DefaultRedirectURI         types.StringIsh `json:"DefaultRedirectURI,omitempty"`
+		PreventUserExistenceErrors types.StringIsh `json:"PreventUserExistenceErrors,omitempty"`
+		UserPoolId                 types.StringIsh `json:"UserPoolId,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -153,20 +162,37 @@ func (r *UserPoolClient) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = UserPoolClient(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ClientName = string(newProps.ClientName)
+		props.DefaultRedirectURI = string(newProps.DefaultRedirectURI)
+		props.PreventUserExistenceErrors = string(newProps.PreventUserExistenceErrors)
+		props.UserPoolId = string(newProps.UserPoolId)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

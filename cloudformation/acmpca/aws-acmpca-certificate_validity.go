@@ -1,8 +1,6 @@
 package acmpca
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Certificate_Validity AWS CloudFormation Resource (AWS::ACMPCA::Certificate.Validity)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-acmpca-certificate-validity.html

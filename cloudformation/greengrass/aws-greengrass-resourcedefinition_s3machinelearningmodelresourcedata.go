@@ -1,8 +1,6 @@
 package greengrass
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ResourceDefinition_S3MachineLearningModelResourceData AWS CloudFormation Resource (AWS::Greengrass::ResourceDefinition.S3MachineLearningModelResourceData)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrass-resourcedefinition-s3machinelearningmodelresourcedata.html

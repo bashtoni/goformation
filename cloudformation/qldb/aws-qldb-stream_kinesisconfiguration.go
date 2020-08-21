@@ -1,8 +1,6 @@
 package qldb
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Stream_KinesisConfiguration AWS CloudFormation Resource (AWS::QLDB::Stream.KinesisConfiguration)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-qldb-stream-kinesisconfiguration.html

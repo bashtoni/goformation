@@ -1,8 +1,6 @@
 package amazonmq
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Broker_LogList AWS CloudFormation Resource (AWS::AmazonMQ::Broker.LogList)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amazonmq-broker-loglist.html

@@ -1,8 +1,6 @@
 package batch
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // JobDefinition_ResourceRequirement AWS CloudFormation Resource (AWS::Batch::JobDefinition.ResourceRequirement)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-jobdefinition-resourcerequirement.html

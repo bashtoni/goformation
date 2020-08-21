@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // DBInstance AWS CloudFormation Resource (AWS::RDS::DBInstance)
@@ -295,7 +296,7 @@ func (r *DBInstance) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r DBInstance) MarshalJSON() ([]byte, error) {
 	type Properties DBInstance
 	return json.Marshal(&struct {
@@ -320,10 +321,43 @@ func (r DBInstance) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *DBInstance) UnmarshalJSON(b []byte) error {
-	type Properties DBInstance
+	type P DBInstance
+	props := &DBInstance{}
+	newProps := &struct {
+		*P
+		AllocatedStorage            types.StringIsh `json:"AllocatedStorage,omitempty"`
+		AvailabilityZone            types.StringIsh `json:"AvailabilityZone,omitempty"`
+		CACertificateIdentifier     types.StringIsh `json:"CACertificateIdentifier,omitempty"`
+		CharacterSetName            types.StringIsh `json:"CharacterSetName,omitempty"`
+		DBClusterIdentifier         types.StringIsh `json:"DBClusterIdentifier,omitempty"`
+		DBInstanceClass             types.StringIsh `json:"DBInstanceClass,omitempty"`
+		DBInstanceIdentifier        types.StringIsh `json:"DBInstanceIdentifier,omitempty"`
+		DBName                      types.StringIsh `json:"DBName,omitempty"`
+		DBParameterGroupName        types.StringIsh `json:"DBParameterGroupName,omitempty"`
+		DBSnapshotIdentifier        types.StringIsh `json:"DBSnapshotIdentifier,omitempty"`
+		DBSubnetGroupName           types.StringIsh `json:"DBSubnetGroupName,omitempty"`
+		Domain                      types.StringIsh `json:"Domain,omitempty"`
+		DomainIAMRoleName           types.StringIsh `json:"DomainIAMRoleName,omitempty"`
+		Engine                      types.StringIsh `json:"Engine,omitempty"`
+		EngineVersion               types.StringIsh `json:"EngineVersion,omitempty"`
+		KmsKeyId                    types.StringIsh `json:"KmsKeyId,omitempty"`
+		LicenseModel                types.StringIsh `json:"LicenseModel,omitempty"`
+		MasterUserPassword          types.StringIsh `json:"MasterUserPassword,omitempty"`
+		MasterUsername              types.StringIsh `json:"MasterUsername,omitempty"`
+		MonitoringRoleArn           types.StringIsh `json:"MonitoringRoleArn,omitempty"`
+		OptionGroupName             types.StringIsh `json:"OptionGroupName,omitempty"`
+		PerformanceInsightsKMSKeyId types.StringIsh `json:"PerformanceInsightsKMSKeyId,omitempty"`
+		Port                        types.StringIsh `json:"Port,omitempty"`
+		PreferredBackupWindow       types.StringIsh `json:"PreferredBackupWindow,omitempty"`
+		PreferredMaintenanceWindow  types.StringIsh `json:"PreferredMaintenanceWindow,omitempty"`
+		SourceDBInstanceIdentifier  types.StringIsh `json:"SourceDBInstanceIdentifier,omitempty"`
+		SourceRegion                types.StringIsh `json:"SourceRegion,omitempty"`
+		StorageType                 types.StringIsh `json:"StorageType,omitempty"`
+		Timezone                    types.StringIsh `json:"Timezone,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -334,20 +368,62 @@ func (r *DBInstance) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = DBInstance(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AllocatedStorage = string(newProps.AllocatedStorage)
+		props.AvailabilityZone = string(newProps.AvailabilityZone)
+		props.CACertificateIdentifier = string(newProps.CACertificateIdentifier)
+		props.CharacterSetName = string(newProps.CharacterSetName)
+		props.DBClusterIdentifier = string(newProps.DBClusterIdentifier)
+		props.DBInstanceClass = string(newProps.DBInstanceClass)
+		props.DBInstanceIdentifier = string(newProps.DBInstanceIdentifier)
+		props.DBName = string(newProps.DBName)
+		props.DBParameterGroupName = string(newProps.DBParameterGroupName)
+		props.DBSnapshotIdentifier = string(newProps.DBSnapshotIdentifier)
+		props.DBSubnetGroupName = string(newProps.DBSubnetGroupName)
+		props.Domain = string(newProps.Domain)
+		props.DomainIAMRoleName = string(newProps.DomainIAMRoleName)
+		props.Engine = string(newProps.Engine)
+		props.EngineVersion = string(newProps.EngineVersion)
+		props.KmsKeyId = string(newProps.KmsKeyId)
+		props.LicenseModel = string(newProps.LicenseModel)
+		props.MasterUserPassword = string(newProps.MasterUserPassword)
+		props.MasterUsername = string(newProps.MasterUsername)
+		props.MonitoringRoleArn = string(newProps.MonitoringRoleArn)
+		props.OptionGroupName = string(newProps.OptionGroupName)
+		props.PerformanceInsightsKMSKeyId = string(newProps.PerformanceInsightsKMSKeyId)
+		props.Port = string(newProps.Port)
+		props.PreferredBackupWindow = string(newProps.PreferredBackupWindow)
+		props.PreferredMaintenanceWindow = string(newProps.PreferredMaintenanceWindow)
+		props.SourceDBInstanceIdentifier = string(newProps.SourceDBInstanceIdentifier)
+		props.SourceRegion = string(newProps.SourceRegion)
+		props.StorageType = string(newProps.StorageType)
+		props.Timezone = string(newProps.Timezone)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

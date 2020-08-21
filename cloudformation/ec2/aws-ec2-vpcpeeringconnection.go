@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // VPCPeeringConnection AWS CloudFormation Resource (AWS::EC2::VPCPeeringConnection)
@@ -65,7 +66,7 @@ func (r *VPCPeeringConnection) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r VPCPeeringConnection) MarshalJSON() ([]byte, error) {
 	type Properties VPCPeeringConnection
 	return json.Marshal(&struct {
@@ -90,10 +91,19 @@ func (r VPCPeeringConnection) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *VPCPeeringConnection) UnmarshalJSON(b []byte) error {
-	type Properties VPCPeeringConnection
+	type P VPCPeeringConnection
+	props := &VPCPeeringConnection{}
+	newProps := &struct {
+		*P
+		PeerOwnerId types.StringIsh `json:"PeerOwnerId,omitempty"`
+		PeerRegion  types.StringIsh `json:"PeerRegion,omitempty"`
+		PeerRoleArn types.StringIsh `json:"PeerRoleArn,omitempty"`
+		PeerVpcId   types.StringIsh `json:"PeerVpcId,omitempty"`
+		VpcId       types.StringIsh `json:"VpcId,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -104,20 +114,38 @@ func (r *VPCPeeringConnection) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = VPCPeeringConnection(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.PeerOwnerId = string(newProps.PeerOwnerId)
+		props.PeerRegion = string(newProps.PeerRegion)
+		props.PeerRoleArn = string(newProps.PeerRoleArn)
+		props.PeerVpcId = string(newProps.PeerVpcId)
+		props.VpcId = string(newProps.VpcId)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

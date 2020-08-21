@@ -1,8 +1,6 @@
 package iotevents
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // DetectorModel_DynamoDB AWS CloudFormation Resource (AWS::IoTEvents::DetectorModel.DynamoDB)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-detectormodel-dynamodb.html

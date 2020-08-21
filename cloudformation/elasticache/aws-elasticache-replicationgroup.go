@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // ReplicationGroup AWS CloudFormation Resource (AWS::ElastiCache::ReplicationGroup)
@@ -190,7 +191,7 @@ func (r *ReplicationGroup) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r ReplicationGroup) MarshalJSON() ([]byte, error) {
 	type Properties ReplicationGroup
 	return json.Marshal(&struct {
@@ -215,10 +216,29 @@ func (r ReplicationGroup) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *ReplicationGroup) UnmarshalJSON(b []byte) error {
-	type Properties ReplicationGroup
+	type P ReplicationGroup
+	props := &ReplicationGroup{}
+	newProps := &struct {
+		*P
+		AuthToken                   types.StringIsh `json:"AuthToken,omitempty"`
+		CacheNodeType               types.StringIsh `json:"CacheNodeType,omitempty"`
+		CacheParameterGroupName     types.StringIsh `json:"CacheParameterGroupName,omitempty"`
+		CacheSubnetGroupName        types.StringIsh `json:"CacheSubnetGroupName,omitempty"`
+		Engine                      types.StringIsh `json:"Engine,omitempty"`
+		EngineVersion               types.StringIsh `json:"EngineVersion,omitempty"`
+		KmsKeyId                    types.StringIsh `json:"KmsKeyId,omitempty"`
+		NotificationTopicArn        types.StringIsh `json:"NotificationTopicArn,omitempty"`
+		PreferredMaintenanceWindow  types.StringIsh `json:"PreferredMaintenanceWindow,omitempty"`
+		PrimaryClusterId            types.StringIsh `json:"PrimaryClusterId,omitempty"`
+		ReplicationGroupDescription types.StringIsh `json:"ReplicationGroupDescription,omitempty"`
+		ReplicationGroupId          types.StringIsh `json:"ReplicationGroupId,omitempty"`
+		SnapshotName                types.StringIsh `json:"SnapshotName,omitempty"`
+		SnapshotWindow              types.StringIsh `json:"SnapshotWindow,omitempty"`
+		SnapshottingClusterId       types.StringIsh `json:"SnapshottingClusterId,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -229,20 +249,48 @@ func (r *ReplicationGroup) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = ReplicationGroup(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AuthToken = string(newProps.AuthToken)
+		props.CacheNodeType = string(newProps.CacheNodeType)
+		props.CacheParameterGroupName = string(newProps.CacheParameterGroupName)
+		props.CacheSubnetGroupName = string(newProps.CacheSubnetGroupName)
+		props.Engine = string(newProps.Engine)
+		props.EngineVersion = string(newProps.EngineVersion)
+		props.KmsKeyId = string(newProps.KmsKeyId)
+		props.NotificationTopicArn = string(newProps.NotificationTopicArn)
+		props.PreferredMaintenanceWindow = string(newProps.PreferredMaintenanceWindow)
+		props.PrimaryClusterId = string(newProps.PrimaryClusterId)
+		props.ReplicationGroupDescription = string(newProps.ReplicationGroupDescription)
+		props.ReplicationGroupId = string(newProps.ReplicationGroupId)
+		props.SnapshotName = string(newProps.SnapshotName)
+		props.SnapshotWindow = string(newProps.SnapshotWindow)
+		props.SnapshottingClusterId = string(newProps.SnapshottingClusterId)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

@@ -1,8 +1,6 @@
 package greengrass
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ResourceDefinitionVersion_LocalVolumeResourceData AWS CloudFormation Resource (AWS::Greengrass::ResourceDefinitionVersion.LocalVolumeResourceData)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-greengrass-resourcedefinitionversion-localvolumeresourcedata.html

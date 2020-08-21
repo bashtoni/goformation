@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Server AWS CloudFormation Resource (AWS::OpsWorksCM::Server)
@@ -140,7 +141,7 @@ func (r *Server) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Server) MarshalJSON() ([]byte, error) {
 	type Properties Server
 	return json.Marshal(&struct {
@@ -165,10 +166,28 @@ func (r Server) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Server) UnmarshalJSON(b []byte) error {
-	type Properties Server
+	type P Server
+	props := &Server{}
+	newProps := &struct {
+		*P
+		BackupId                   types.StringIsh `json:"BackupId,omitempty"`
+		CustomCertificate          types.StringIsh `json:"CustomCertificate,omitempty"`
+		CustomDomain               types.StringIsh `json:"CustomDomain,omitempty"`
+		CustomPrivateKey           types.StringIsh `json:"CustomPrivateKey,omitempty"`
+		Engine                     types.StringIsh `json:"Engine,omitempty"`
+		EngineModel                types.StringIsh `json:"EngineModel,omitempty"`
+		EngineVersion              types.StringIsh `json:"EngineVersion,omitempty"`
+		InstanceProfileArn         types.StringIsh `json:"InstanceProfileArn,omitempty"`
+		InstanceType               types.StringIsh `json:"InstanceType,omitempty"`
+		KeyPair                    types.StringIsh `json:"KeyPair,omitempty"`
+		PreferredBackupWindow      types.StringIsh `json:"PreferredBackupWindow,omitempty"`
+		PreferredMaintenanceWindow types.StringIsh `json:"PreferredMaintenanceWindow,omitempty"`
+		ServerName                 types.StringIsh `json:"ServerName,omitempty"`
+		ServiceRoleArn             types.StringIsh `json:"ServiceRoleArn,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -179,20 +198,47 @@ func (r *Server) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Server(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.BackupId = string(newProps.BackupId)
+		props.CustomCertificate = string(newProps.CustomCertificate)
+		props.CustomDomain = string(newProps.CustomDomain)
+		props.CustomPrivateKey = string(newProps.CustomPrivateKey)
+		props.Engine = string(newProps.Engine)
+		props.EngineModel = string(newProps.EngineModel)
+		props.EngineVersion = string(newProps.EngineVersion)
+		props.InstanceProfileArn = string(newProps.InstanceProfileArn)
+		props.InstanceType = string(newProps.InstanceType)
+		props.KeyPair = string(newProps.KeyPair)
+		props.PreferredBackupWindow = string(newProps.PreferredBackupWindow)
+		props.PreferredMaintenanceWindow = string(newProps.PreferredMaintenanceWindow)
+		props.ServerName = string(newProps.ServerName)
+		props.ServiceRoleArn = string(newProps.ServiceRoleArn)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

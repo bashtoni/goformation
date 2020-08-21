@@ -1,8 +1,6 @@
 package apigatewayv2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ApiGatewayManagedOverrides_StageOverrides AWS CloudFormation Resource (AWS::ApiGatewayV2::ApiGatewayManagedOverrides.StageOverrides)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-apigatewayv2-apigatewaymanagedoverrides-stageoverrides.html

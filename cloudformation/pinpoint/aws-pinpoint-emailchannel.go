@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // EmailChannel AWS CloudFormation Resource (AWS::Pinpoint::EmailChannel)
@@ -64,7 +65,7 @@ func (r *EmailChannel) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r EmailChannel) MarshalJSON() ([]byte, error) {
 	type Properties EmailChannel
 	return json.Marshal(&struct {
@@ -89,10 +90,19 @@ func (r EmailChannel) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *EmailChannel) UnmarshalJSON(b []byte) error {
-	type Properties EmailChannel
+	type P EmailChannel
+	props := &EmailChannel{}
+	newProps := &struct {
+		*P
+		ApplicationId    types.StringIsh `json:"ApplicationId,omitempty"`
+		ConfigurationSet types.StringIsh `json:"ConfigurationSet,omitempty"`
+		FromAddress      types.StringIsh `json:"FromAddress,omitempty"`
+		Identity         types.StringIsh `json:"Identity,omitempty"`
+		RoleArn          types.StringIsh `json:"RoleArn,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -103,20 +113,38 @@ func (r *EmailChannel) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = EmailChannel(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ApplicationId = string(newProps.ApplicationId)
+		props.ConfigurationSet = string(newProps.ConfigurationSet)
+		props.FromAddress = string(newProps.FromAddress)
+		props.Identity = string(newProps.Identity)
+		props.RoleArn = string(newProps.RoleArn)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

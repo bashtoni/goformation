@@ -1,8 +1,6 @@
 package amplify
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Domain_SubDomainSetting AWS CloudFormation Resource (AWS::Amplify::Domain.SubDomainSetting)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-amplify-domain-subdomainsetting.html

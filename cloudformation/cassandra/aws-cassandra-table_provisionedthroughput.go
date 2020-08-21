@@ -1,8 +1,6 @@
 package cassandra
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Table_ProvisionedThroughput AWS CloudFormation Resource (AWS::Cassandra::Table.ProvisionedThroughput)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-cassandra-table-provisionedthroughput.html

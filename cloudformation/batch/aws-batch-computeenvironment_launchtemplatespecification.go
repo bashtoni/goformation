@@ -1,8 +1,6 @@
 package batch
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ComputeEnvironment_LaunchTemplateSpecification AWS CloudFormation Resource (AWS::Batch::ComputeEnvironment.LaunchTemplateSpecification)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-batch-computeenvironment-launchtemplatespecification.html

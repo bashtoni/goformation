@@ -7,6 +7,7 @@ import (
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
 	"github.com/awslabs/goformation/v4/cloudformation/tags"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // Stream AWS CloudFormation Resource (AWS::QLDB::Stream)
@@ -70,7 +71,7 @@ func (r *Stream) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r Stream) MarshalJSON() ([]byte, error) {
 	type Properties Stream
 	return json.Marshal(&struct {
@@ -95,10 +96,19 @@ func (r Stream) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *Stream) UnmarshalJSON(b []byte) error {
-	type Properties Stream
+	type P Stream
+	props := &Stream{}
+	newProps := &struct {
+		*P
+		ExclusiveEndTime   types.StringIsh `json:"ExclusiveEndTime,omitempty"`
+		InclusiveStartTime types.StringIsh `json:"InclusiveStartTime,omitempty"`
+		LedgerName         types.StringIsh `json:"LedgerName,omitempty"`
+		RoleArn            types.StringIsh `json:"RoleArn,omitempty"`
+		StreamName         types.StringIsh `json:"StreamName,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -109,20 +119,38 @@ func (r *Stream) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = Stream(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.ExclusiveEndTime = string(newProps.ExclusiveEndTime)
+		props.InclusiveStartTime = string(newProps.InclusiveStartTime)
+		props.LedgerName = string(newProps.LedgerName)
+		props.RoleArn = string(newProps.RoleArn)
+		props.StreamName = string(newProps.StreamName)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

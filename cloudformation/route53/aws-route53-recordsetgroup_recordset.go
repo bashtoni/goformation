@@ -1,8 +1,6 @@
 package route53
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // RecordSetGroup_RecordSet AWS CloudFormation Resource (AWS::Route53::RecordSetGroup.RecordSet)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-route53-recordset.html

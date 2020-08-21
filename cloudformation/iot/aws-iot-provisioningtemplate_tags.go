@@ -1,8 +1,6 @@
 package iot
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // ProvisioningTemplate_Tags AWS CloudFormation Resource (AWS::IoT::ProvisioningTemplate.Tags)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iot-provisioningtemplate-tags.html

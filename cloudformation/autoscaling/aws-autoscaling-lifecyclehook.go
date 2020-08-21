@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/awslabs/goformation/v4/cloudformation/policies"
+	"github.com/awslabs/goformation/v4/cloudformation/types"
 )
 
 // LifecycleHook AWS CloudFormation Resource (AWS::AutoScaling::LifecycleHook)
@@ -74,7 +75,7 @@ func (r *LifecycleHook) AWSCloudFormationType() string {
 }
 
 // MarshalJSON is a custom JSON marshalling hook that embeds this object into
-// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.
+// an AWS CloudFormation JSON resource's 'Properties' field and adds a 'Type'.'
 func (r LifecycleHook) MarshalJSON() ([]byte, error) {
 	type Properties LifecycleHook
 	return json.Marshal(&struct {
@@ -99,10 +100,21 @@ func (r LifecycleHook) MarshalJSON() ([]byte, error) {
 // UnmarshalJSON is a custom JSON unmarshalling hook that strips the outer
 // AWS CloudFormation resource object, and just keeps the 'Properties' field.
 func (r *LifecycleHook) UnmarshalJSON(b []byte) error {
-	type Properties LifecycleHook
+	type P LifecycleHook
+	props := &LifecycleHook{}
+	newProps := &struct {
+		*P
+		AutoScalingGroupName  types.StringIsh `json:"AutoScalingGroupName,omitempty"`
+		DefaultResult         types.StringIsh `json:"DefaultResult,omitempty"`
+		LifecycleHookName     types.StringIsh `json:"LifecycleHookName,omitempty"`
+		LifecycleTransition   types.StringIsh `json:"LifecycleTransition,omitempty"`
+		NotificationMetadata  types.StringIsh `json:"NotificationMetadata,omitempty"`
+		NotificationTargetARN types.StringIsh `json:"NotificationTargetARN,omitempty"`
+		RoleARN               types.StringIsh `json:"RoleARN,omitempty"`
+	}{P: (*P)(props)}
 	res := &struct {
 		Type                string
-		Properties          *Properties
+		Properties          json.RawMessage
 		DependsOn           interface{}
 		Metadata            map[string]interface{}
 		DeletionPolicy      string
@@ -113,20 +125,40 @@ func (r *LifecycleHook) UnmarshalJSON(b []byte) error {
 	dec := json.NewDecoder(bytes.NewReader(b))
 	dec.DisallowUnknownFields() // Force error if unknown field is found
 
+	// Unmarshal everything except the properties
 	if err := dec.Decode(&res); err != nil {
 		fmt.Printf("ERROR: %s\n", err)
 		return err
 	}
 
-	// If the resource has no Properties set, it could be nil
 	if res.Properties != nil {
-		*r = LifecycleHook(*res.Properties)
+		// Unmarshal the properties, being forgiving of type mismatches
+		if err := json.Unmarshal(res.Properties, newProps); err != nil {
+			fmt.Printf("ERROR: %s\n", err)
+			return err
+		}
+
+		props.AutoScalingGroupName = string(newProps.AutoScalingGroupName)
+		props.DefaultResult = string(newProps.DefaultResult)
+		props.LifecycleHookName = string(newProps.LifecycleHookName)
+		props.LifecycleTransition = string(newProps.LifecycleTransition)
+		props.NotificationMetadata = string(newProps.NotificationMetadata)
+		props.NotificationTargetARN = string(newProps.NotificationTargetARN)
+		props.RoleARN = string(newProps.RoleARN)
+
+		*r = *props
 	}
 	if dependsOn, ok := res.DependsOn.(string); ok {
 		r.AWSCloudFormationDependsOn = []string{dependsOn}
 	}
-	if dependsOn, ok := res.DependsOn.([]string); ok {
-		r.AWSCloudFormationDependsOn = dependsOn
+	if dependsOn, ok := res.DependsOn.([]interface{}); ok {
+		var do []string
+		for _, d := range dependsOn {
+			if dStr, ok := d.(string); ok {
+				do = append(do, dStr)
+			}
+		}
+		r.AWSCloudFormationDependsOn = do
 	}
 
 	if res.Metadata != nil {

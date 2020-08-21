@@ -1,8 +1,6 @@
 package iotevents
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // DetectorModel_OnEnter AWS CloudFormation Resource (AWS::IoTEvents::DetectorModel.OnEnter)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-iotevents-detectormodel-onenter.html

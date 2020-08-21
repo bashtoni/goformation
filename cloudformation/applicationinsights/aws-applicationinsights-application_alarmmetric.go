@@ -1,8 +1,6 @@
 package applicationinsights
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // Application_AlarmMetric AWS CloudFormation Resource (AWS::ApplicationInsights::Application.AlarmMetric)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-applicationinsights-application-alarmmetric.html

@@ -1,8 +1,6 @@
 package macie
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // FindingsFilter_FindingCriteria AWS CloudFormation Resource (AWS::Macie::FindingsFilter.FindingCriteria)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-macie-findingsfilter-findingcriteria.html

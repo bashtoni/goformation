@@ -1,8 +1,6 @@
 package wafv2
 
-import (
-	"github.com/awslabs/goformation/v4/cloudformation/policies"
-)
+import "github.com/awslabs/goformation/v4/cloudformation/policies"
 
 // WebACL_ByteMatchStatement AWS CloudFormation Resource (AWS::WAFv2::WebACL.ByteMatchStatement)
 // See: http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-properties-wafv2-webacl-bytematchstatement.html
